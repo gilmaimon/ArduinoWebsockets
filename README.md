@@ -86,4 +86,4 @@ new Esp32cpClient
 Contributions are welcomed! Please open issues if you have troubles while using the library or any queshtions on how to get started. Pull requests are welcomed, please open an issue first.
 
 ## Change Log
-- 14/02/2019 (0.1.1) - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
+- **14/02/2019 (v0.1.1)** - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
