@@ -1,5 +1,8 @@
 #include <ArduinoWebsockets.h>
-#include <WifiConnection.h>
+#include "ESP8266WiFi.h"
+
+const char* ssid = "ssid"; //Enter SSID
+const char* password = "password"; //Enter Password
 
 using namespace websockets;
 using namespace websockets::network;
@@ -8,16 +11,16 @@ WebsocketsClient client(new Esp8266TcpClient);
 void setup() {
     Serial.begin(115200);
     // Connect to wifi
-    WifiConnection::tryConnect("SSID", "PASSWORD");
+    WiFi.begin(ssid, password);
 
     // Wait some time to connect to wifi
-    for(int i = 0; i < 10 && !WifiConnection::isConnected(); i++) {
+    for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
         Serial.print(".");
         delay(1000);
     }
 
     // Check if connected to wifi
-    if(!WifiConnection::isConnected()) {
+    if(WiFi.status() != WL_CONNECTED) {
         Serial.println("No Wifi!");
         return;
     }
