@@ -8,7 +8,7 @@ A library for writing modern websockets applications with Arduino (ESP8266 and E
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.1.0) the library only works with ESP8266.
+Currently (version 0.1.1) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
@@ -18,32 +18,37 @@ Detailed instructions can be found [here](https://www.ardu-badge.com/ArduinoWebs
 ## Full Basic Example
 ```c++
 #include <ArduinoWebsockets.h>
-#include <WifiConnection.h>
+#include <WiFi.h>
+
+const char* ssid = "ssid"; //Enter SSID
+const char* password = "password"; //Enter Password
+const char* websockets_server_host = "serverip_or_name"; //Enter server adress
+const uint16_t websockets_server_port = 8080; // Enter server port
 
 using namespace websockets;
 using namespace websockets::network;
 
-WebsocketsClient client(new Esp8266TcpClient);
+WebsocketsClient client(new Esp32TcpClient);
 void setup() {
     Serial.begin(115200);
     // Connect to wifi
-    WifiConnection::tryConnect("SSID", "PASSWORD");
+    WiFi.begin(ssid, password);
 
     // Wait some time to connect to wifi
-    for(int i = 0; i < 10 && !WifiConnection::isConnected(); i++) {
+    for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
         Serial.print(".");
         delay(1000);
     }
 
     // Check if connected to wifi
-    if(!WifiConnection::isConnected()) {
+    if(WiFi.status() != WL_CONNECTED) {
         Serial.println("No Wifi!");
         return;
     }
 
     Serial.println("Connected to Wifi, Connection to server.");
     // try to connect to Websockets server
-    bool connected = client.connect("SERVER_IP", "/", 8080);
+    bool connected = client.connect(websockets_server_host, "/", websockets_server_port);
     if(connected) {
         Serial.println("Connecetd!");
         client.send("Hello Server");
@@ -67,5 +72,18 @@ void loop() {
 }
 ```
 
+***Note**: for esp32, replace:* 
+```c++
+new Esp8266TcpClient
+``` 
+*with*
+```c++
+new Esp32cpClient
+```
+
+
 ## Contributing
 Contributions are welcomed! Please open issues if you have troubles while using the library or any queshtions on how to get started. Pull requests are welcomed, please open an issue first.
+
+## Change Log
+- 14/02/2019 (0.1.1) - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
