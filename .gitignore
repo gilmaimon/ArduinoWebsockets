@@ -1,3 +1,8 @@
+#Compiled Arduino files
+*.elf
+*.hex
+*.bin
+
 # Prerequisites
 *.d
 
