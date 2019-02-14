@@ -1,0 +1,14 @@
+websockets	KEYWORD1
+network	KEYWORD1
+WebsocketsClient	KEYWORD1
+Esp8266TcpClient	KEYWORD1
+
+connect	KEYWORD2
+send	KEYWORD2
+onMessage	KEYWORD2
+available	KEYWORD2
+poll	KEYWORD2
+
+WebsocketsMessage	KEYWORD1
+data	KEYWORD2
+type	KEYWORD2
