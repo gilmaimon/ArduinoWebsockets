@@ -2,6 +2,7 @@ websockets	KEYWORD1
 network	KEYWORD1
 WebsocketsClient	KEYWORD1
 Esp8266TcpClient	KEYWORD1
+Esp32TcpClient	KEYWORD1
 
 connect	KEYWORD2
 send	KEYWORD2
