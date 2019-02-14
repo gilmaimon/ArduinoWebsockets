@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ws_common.h"
-#include "crypto/base64.h"
-#include "crypto/sha1.h"
+#include "wscrypto/base64.h"
+#include "wscrypto/sha1.h"
 
 namespace websockets { namespace crypto {
     WSString base64Encode(WSString data) {
