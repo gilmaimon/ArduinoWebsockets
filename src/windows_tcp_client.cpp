@@ -14,11 +14,13 @@
 #include <stdio.h>
 
 namespace websockets { namespace network {
-	// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
-	#pragma comment (lib, "Ws2_32.lib")
-	#pragma comment (lib, "Mswsock.lib")
-	#pragma comment (lib, "AdvApi32.lib")
-
+	/*
+		Note: Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+		With MSVC:
+		#pragma comment (lib, "Ws2_32.lib")
+		#pragma comment (lib, "Mswsock.lib")
+		#pragma comment (lib, "AdvApi32.lib")
+	*/
 	SOCKET windowsTcpConnect(WSString host, int port) {
 		WSADATA wsaData;
 		SOCKET connectSocket = INVALID_SOCKET;
@@ -54,7 +56,7 @@ namespace websockets { namespace network {
 			}
 
 			// Connect to server.
-			iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+			iResult = connect(connectSocket, ptr->ai_addr, static_cast<int>(ptr->ai_addrlen));
 			if (iResult == SOCKET_ERROR) {
 				closesocket(connectSocket);
 				connectSocket = INVALID_SOCKET;
@@ -71,7 +73,7 @@ namespace websockets { namespace network {
 	// Returns true if an error occured
 	bool windowsTcpSend(uint8_t* buffer, uint32_t len, SOCKET socket) {
 		// Send an initial buffer
-		const char* cBuffer = (const char*)buffer;
+		const char* cBuffer = reinterpret_cast<const char*>(buffer);
 
 		int iResult = send(socket, cBuffer, len, 0);
 		if (iResult == SOCKET_ERROR) {
@@ -85,7 +87,7 @@ namespace websockets { namespace network {
 	// Returns true if error occured
 	bool windowsTcpRecive(uint8_t* buffer, uint32_t len, SOCKET socket) {
 		// Receive until the peer closes the connection
-		int iResult = recv(socket, (char*)buffer, len, 0);
+		int iResult = recv(socket, reinterpret_cast<char*>(buffer), len, 0);
 		if (iResult > 0) {
 			return false;
 		}
@@ -116,7 +118,7 @@ namespace websockets { namespace network {
 	}
 
 	void WinTcpSocket::send(WSString data) {
-		this->send((uint8_t*) data.c_str(), data.size());
+		this->send(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
 	}
 
 	void WinTcpSocket::send(uint8_t* data, uint32_t len) {
@@ -129,7 +131,7 @@ namespace websockets { namespace network {
 		WSString line;
 		auto error = windowsTcpRecive(&byte, 1, this->socket);
 		while (!error) {
-			line += (char)byte;
+			line += static_cast<char>(byte);
 			if (byte == '\n') break;
 			error = windowsTcpRecive(&byte, 1, this->socket);
 		}

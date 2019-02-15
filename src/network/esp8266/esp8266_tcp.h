@@ -23,7 +23,7 @@ namespace websockets { namespace network {
 		}
 
 		void send(WSString data) override {
-			client.write((uint8_t*) data.c_str(), data.size());
+			client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
 		}
 
 		void send(uint8_t* data, uint32_t len) override {

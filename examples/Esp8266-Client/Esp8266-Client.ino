@@ -47,7 +47,7 @@ void setup() {
 
     Serial.println("Connected to Wifi, Connection to server.");
     // try to connect to Websockets server
-    bool connected = client.connect(websockets_server_host, "/", websockets_server_port);
+    bool connected = client.connect(websockets_server_host, websockets_server_port, "/");
     if(connected) {
         Serial.println("Connecetd!");
         client.send("Hello Server");

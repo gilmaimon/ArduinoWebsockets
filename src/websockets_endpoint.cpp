@@ -12,7 +12,7 @@ namespace websockets { namespace internals {
     Header readHeaderFromSocket(network::TcpSocket& socket) {
         Header header;
         header.payload = 0;
-        socket.read((uint8_t*)&header, 2);
+        socket.read(reinterpret_cast<uint8_t*>(&header), 2);
         return std::move(header);
     }
 
@@ -22,7 +22,7 @@ namespace websockets { namespace internals {
         if (header.payload == 126) {
             // read next 16 bits as payload length
             uint16_t tmp = 0;
-            socket.read((uint8_t*)&tmp, 2);
+            socket.read(reinterpret_cast<uint8_t*>(tmp), 2);
             tmp = (tmp << 8) | (tmp >> 8);
             extendedPayload = tmp;
         }
@@ -34,7 +34,7 @@ namespace websockets { namespace internals {
     }
 
     void readMaskingKey(network::TcpSocket& socket, uint8_t* outputBuffer) {
-        socket.read((uint8_t*)outputBuffer, 4);
+        socket.read(reinterpret_cast<uint8_t*>(outputBuffer), 4);
     }
 
     WSString readData(network::TcpSocket& socket, uint64_t extendedPayload) {
@@ -48,15 +48,15 @@ namespace websockets { namespace internals {
             socket.read(buffer, to_read);
             done_reading += to_read;
 
-            for (int i = 0; i < to_read; i++) {
-                data += (char)buffer[i];
+            for (uint64_t i = 0; i < to_read; i++) {
+                data += static_cast<char>(buffer[i]);
             }
         }
         return data;
     }
 
-    WSString remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
-        for (int i = 0; i < payloadLength; i++) {
+    void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
+        for (uint64_t i = 0; i < payloadLength; i++) {
             data[i] = data[i] ^ maskingKey[i % 4];
         }
     }
@@ -105,7 +105,7 @@ namespace websockets { namespace internals {
 
         //header.log();
         // send initial header
-        this->_socket.send((uint8_t*) &header, 2);
+        this->_socket.send(reinterpret_cast<uint8_t*>(&header), 2);
 
         if(header.payload == 126) {
             // send 16 bit length
@@ -113,14 +113,14 @@ namespace websockets { namespace internals {
             // swap the bytes
             extendedLen = extendedLen << 8 | extendedLen >> 8;
 
-            this->_socket.send((uint8_t*) &extendedLen, 2);
+            this->_socket.send(reinterpret_cast<uint8_t*>(&extendedLen), 2);
         } else if(header.payload == 127) {
             // TODO handle very long messages
         }
 
         // if masking is set, send the masking key
         if(mask) {
-            this->_socket.send((uint8_t*) &maskingKey, 4);
+            this->_socket.send(reinterpret_cast<uint8_t*>(maskingKey), 4);
         }
 
         this->_socket.send(data);
@@ -132,11 +132,11 @@ namespace websockets { namespace internals {
     }
 
     void WebsocketsEndpoint::pong(WSString msg) {
-        send(msg, MessageType::Ping);
+        send(msg, MessageType::Pong);
     }
 
     void WebsocketsEndpoint::ping(WSString msg) {
-        send(msg, MessageType::Pong);
+        send(msg, MessageType::Ping);
     }
 
     WebsocketsEndpoint::~WebsocketsEndpoint() {}

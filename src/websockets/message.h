@@ -28,9 +28,9 @@ namespace websockets {
 
         static WebsocketsMessage CreateFromFrame(internals::WebsocketsFrame frame) {
             return WebsocketsMessage(
-                (MessageType) frame.opcode,
+                static_cast<MessageType>(frame.opcode),
                 frame.payload,
-                !frame.fin && frame.opcode != 0 || frame.fin && frame.opcode == 0
+                (!frame.fin && frame.opcode != 0) || (frame.fin && frame.opcode == 0)
             );
         }
         

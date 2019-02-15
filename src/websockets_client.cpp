@@ -4,9 +4,13 @@
 #include "websockets/message.h"
 #include "websockets/websockets_client.h"
 #include "wscrypto/crypto.h"
+#include <iostream>
 
 namespace websockets {
-    WebsocketsClient::WebsocketsClient(network::TcpClient* client) : _client(client), WebsocketsEndpoint(*client), _connectionOpen(false) {
+    WebsocketsClient::WebsocketsClient(network::TcpClient* client) : 
+        WebsocketsEndpoint(*client), 
+        _client(client), 
+        _connectionOpen(false) {
         // Empty
     }
 
@@ -24,11 +28,11 @@ namespace websockets {
         handshake += "Sec-WebSocket-Version: 13\r\n";
         handshake += "\r\n";
 
-        WSString expectedAccept = crypto::websocketsHandshakeEncodeKey(key);
-
         HandshakeRequestResult result;
         result.requestStr = handshake;
-        result.expectedAcceptKey = expectedAccept;
+#ifndef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
+        result.expectedAcceptKey = crypto::websocketsHandshakeEncodeKey(key);
+#endif
         return std::move(result);
     }
 
@@ -74,7 +78,7 @@ namespace websockets {
         return result;
     }
 
-    bool WebsocketsClient::connect(WSString host, WSString path, int port) {
+    bool WebsocketsClient::connect(WSString host, int port, WSString path) {
         this->_connectionOpen = this->_client->connect(host, port);
         if (!this->_connectionOpen) return false;
 
@@ -94,18 +98,29 @@ namespace websockets {
             serverResponseHeaders += line;
             if (line == "\r\n") break;
         }
-        
+
         auto parsedResponse = parseHandshakeResponse(serverResponseHeaders);
-        if(parsedResponse.isSuccess == false || parsedResponse.serverAccept != handshake.expectedAcceptKey) {
+        
+#ifdef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
+        bool serverAcceptMismatch = false;
+#else
+        bool serverAcceptMismatch = parsedResponse.serverAccept != handshake.expectedAcceptKey;
+#endif
+        if(parsedResponse.isSuccess == false || serverAcceptMismatch) {
             close();
             return false;
         }
 
+        this->_eventsCallback(WebsocketsEvent::ConnectionOpened, "");
         return true;
     }
 
     void WebsocketsClient::onMessage(MessageCallback callback) {
-        this->_callback = callback;
+        this->_messagesCallback = callback;
+    }
+
+    void WebsocketsClient::onEvent(EventCallback callback) {
+        this->_eventsCallback = callback;
     }
 
     void WebsocketsClient::poll() {
@@ -114,7 +129,7 @@ namespace websockets {
             
             auto msg = WebsocketsMessage::CreateFromFrame(frame);
             if(msg.isBinary() || msg.isText()) {
-                this->_callback(std::move(msg));
+                this->_messagesCallback(std::move(msg));
             } else if(msg.type() == MessageType::Ping) {
                 _handlePing(std::move(msg));
             } else if(msg.type() == MessageType::Pong) {
@@ -145,6 +160,14 @@ namespace websockets {
         return _connectionOpen;
     }
 
+    void WebsocketsClient::ping(WSString data) {
+        WebsocketsEndpoint::ping(data);
+    }
+
+    void WebsocketsClient::pong(WSString data) {
+        WebsocketsEndpoint::pong(data);
+    }
+
     void WebsocketsClient::close() {
         if(available()) {
             this->_connectionOpen = false;
@@ -152,15 +175,17 @@ namespace websockets {
         }
     }
 
-    void WebsocketsClient::_handlePing(WebsocketsMessage) {
-        // TODO handle ping
+    void WebsocketsClient::_handlePing(WebsocketsMessage message) {
+        WebsocketsEndpoint::pong(message.data());
+        this->_eventsCallback(WebsocketsEvent::GotPing, message.data());
     }
 
-    void WebsocketsClient::_handlePong(WebsocketsMessage) {
-        // TODO handle pong
+    void WebsocketsClient::_handlePong(WebsocketsMessage message) {
+        this->_eventsCallback(WebsocketsEvent::GotPong, message.data());
     }
 
-    void WebsocketsClient::_handleClose(WebsocketsMessage) {
+    void WebsocketsClient::_handleClose(WebsocketsMessage message) {
+        this->_eventsCallback(WebsocketsEvent::ConnectionClosed, message.data());
         if(available()) {
             this->_connectionOpen = false;
             WebsocketsEndpoint::close(false);

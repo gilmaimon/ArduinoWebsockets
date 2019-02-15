@@ -27,10 +27,10 @@ private:
 
     static uint32_t make_word(const uint8_t *p){
         return
-            ((uint32_t)p[0] << 3*8) |
-            ((uint32_t)p[1] << 2*8) |
-            ((uint32_t)p[2] << 1*8) |
-            ((uint32_t)p[3] << 0*8);
+            static_cast<uint32_t>(p[0] << 3*8) |
+            static_cast<uint32_t>(p[1] << 2*8) |
+            static_cast<uint32_t>(p[2] << 1*8) |
+            static_cast<uint32_t>(p[3] << 0*8);
     }
 
     void process_block(const uint8_t *ptr){
@@ -47,7 +47,7 @@ private:
 
         uint32_t w[16];
 
-        for (int i = 0; i < 16; i++) w[i] = make_word(ptr + i*4);
+        for (int _i = 0; _i < 16; _i++) w[_i] = make_word(ptr + _i*4);
 
 #define SHA1_LOAD(i) w[i&15] = rol32(w[(i+13)&15] ^ w[(i+8)&15] ^ w[(i+2)&15] ^ w[i&15], 1);
 #define SHA1_ROUND_0(v,u,x,y,z,i)              z += ((u & (x ^ y)) ^ y) + w[i&15] + c0 + rol32(v, 5); u = rol32(u, 30);
@@ -174,13 +174,13 @@ public:
     }
 
     sha1& add(char c){
-        return add(*(uint8_t*)&c);
+        return add( static_cast<uint8_t>(c) );
     }
 
     sha1& add(const void *data, uint32_t n){
         if (!data) return *this;
 
-        const uint8_t *ptr = (const uint8_t*)data;
+        const uint8_t *ptr = reinterpret_cast<const uint8_t*>(data);
 
         // fill up block if not full
         for (; n && i % sizeof(buf); n--) add(*ptr++);
@@ -218,9 +218,9 @@ public:
     ) const {
         // print hex
         int k = 0;
-        for (int i = 0; i < 5; i++){
+        for (int _i = 0; _i < 5; _i++){
             for (int j = 7; j >= 0; j--){
-                hex[k++] = alphabet[(state[i] >> j * 4) & 0xf];
+                hex[k++] = alphabet[(state[_i] >> j * 4) & 0xf];
             }
         }
         if (zero_terminate) hex[k] = '\0';
@@ -228,11 +228,12 @@ public:
     }
 
     const sha1& print_base64(char *base64, bool zero_terminate = true) const {
-        static const uint8_t *table = (const uint8_t*)
+        static const uint8_t *table = reinterpret_cast<const uint8_t*>(
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz"
             "0123456789"
-            "+/";
+            "+/"
+        );
 
         uint32_t triples[7] = {
             ((state[0] & 0xffffff00) >> 1*8),
@@ -244,12 +245,12 @@ public:
             ((state[4] & 0x0000ffff) << 1*8),
         };
 
-        for (int i = 0; i < 7; i++){
-            uint32_t x = triples[i];
-            base64[i*4 + 0] = table[(x >> 3*6) % 64];
-            base64[i*4 + 1] = table[(x >> 2*6) % 64];
-            base64[i*4 + 2] = table[(x >> 1*6) % 64];
-            base64[i*4 + 3] = table[(x >> 0*6) % 64];
+        for (int _i = 0; _i < 7; _i++){
+            uint32_t x = triples[_i];
+            base64[_i*4 + 0] = table[(x >> 3*6) % 64];
+            base64[_i*4 + 1] = table[(x >> 2*6) % 64];
+            base64[_i*4 + 2] = table[(x >> 1*6) % 64];
+            base64[_i*4 + 3] = table[(x >> 0*6) % 64];
         }
 
         base64[SHA1_BASE64_SIZE - 2] = '=';
