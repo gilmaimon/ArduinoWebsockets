@@ -1,6 +1,5 @@
 #pragma once
 
-#define ESP32
 #ifdef ESP32 
 
 #include "ws_common.h"
