@@ -1,3 +1,21 @@
+/*
+	Esp32 Websockets Client
+
+	This sketch:
+        1. Connects to a WiFi network
+        2. Connects to a Websockets server
+        3. Sends the websockets server a message ("Hello Server")
+        4. Prints all incoming messages while the connection is open
+
+	Hardware:
+        For this sketch you only need an ESP32 board.
+
+	Created 15/02/2019
+	By Gil Maimon
+	https://github.com/gilmaimon/ArduinoWebsockets
+
+*/
+
 #include <ArduinoWebsockets.h>
 #include <WiFi.h>
 
