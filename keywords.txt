@@ -7,9 +7,27 @@ Esp32TcpClient	KEYWORD1
 connect	KEYWORD2
 send	KEYWORD2
 onMessage	KEYWORD2
+onEvent	KEYWORD2
 available	KEYWORD2
 poll	KEYWORD2
+ping	KEYWORD2
+pong	KEYWORD2
+close	KEYWORD2
 
 WebsocketsMessage	KEYWORD1
 data	KEYWORD2
 type	KEYWORD2
+
+WebsocketsEvent	KEYWORD1
+ConnectionOpened	LITERAL1
+ConnectionClosed	LITERAL1
+GotPing	LITERAL1
+GotPong	LITERAL1
+
+WSString	KEYWORD1
+MessageType	KEYWORD1
+Text	LITERAL1
+Binary	LITERAL1
+Close	LITERAL1
+Ping	LITERAL1
+Pong	LITERAL1

@@ -23,4 +23,6 @@ install:
   - ln -s $PWD $HOME/Arduino/libraries/.
 script:
   - buildExampleSketchEsp32 "Esp32-Client"
+  - buildExampleSketchEsp32 "Minimal-Esp32-Client"
   - buildExampleSketchEsp8266 "Esp8266-Client"
+  - buildExampleSketchEsp8266 "Minimal-Esp8266-Client"
