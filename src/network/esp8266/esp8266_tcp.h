@@ -15,7 +15,7 @@ namespace websockets { namespace network {
 		}
 
 		bool poll() {
-			return client.peek();
+			return client.available();
 		}
 
 		bool available() override {
@@ -31,14 +31,13 @@ namespace websockets { namespace network {
 		}
 		
 		WSString readLine() override {
-			uint8_t byte = '\0';
+			int val;
 			WSString line;
-			while (poll()) {
-				read(&byte, 1);
-				if(byte == '\0') continue;
-				line += (char)byte;
-				if (byte == '\n') break;
-			}
+			do {
+				val = client.read();
+				if(val < 0) continue;
+				line += (char)val;
+			} while(val != '\n');
 			if(!available()) close();
 			return line;
 		}

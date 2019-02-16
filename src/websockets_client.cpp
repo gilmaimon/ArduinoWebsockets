@@ -4,13 +4,14 @@
 #include "websockets/message.h"
 #include "websockets/websockets_client.h"
 #include "wscrypto/crypto.h"
-#include <iostream>
 
 namespace websockets {
     WebsocketsClient::WebsocketsClient(network::TcpClient* client) : 
         WebsocketsEndpoint(*client), 
         _client(client), 
-        _connectionOpen(false) {
+        _connectionOpen(false),
+        _messagesCallback([](WebsocketsMessage){}),
+        _eventsCallback([](WebsocketsEvent, WSString){}) {
         // Empty
     }
 
@@ -123,11 +124,12 @@ namespace websockets {
         this->_eventsCallback = callback;
     }
 
-    void WebsocketsClient::poll() {
+    bool WebsocketsClient::poll() {
+        bool messageReceived = false;
         while(available() && WebsocketsEndpoint::poll()) {
-            auto frame = WebsocketsEndpoint::recv();
+            auto msg = WebsocketsEndpoint::recv();
+            messageReceived = true;
             
-            auto msg = WebsocketsMessage::CreateFromFrame(frame);
             if(msg.isBinary() || msg.isText()) {
                 this->_messagesCallback(std::move(msg));
             } else if(msg.type() == MessageType::Ping) {
@@ -138,18 +140,22 @@ namespace websockets {
                 _handleClose(std::move(msg));
             }
         }
+
+        return messageReceived;
     }
 
-    void WebsocketsClient::send(WSString data) {
+    bool WebsocketsClient::send(WSString data) {
         if(available()) {
-            WebsocketsEndpoint::send(data, MessageType::Text);
+            return WebsocketsEndpoint::send(data, MessageType::Text);
         }
+        return false;
     }
 
-    void WebsocketsClient::sendBinary(WSString data) {
+    bool WebsocketsClient::sendBinary(WSString data) {
         if(available()) {
-            WebsocketsEndpoint::send(data, MessageType::Binary);
+            return WebsocketsEndpoint::send(data, MessageType::Binary);
         }
+        return false;
     }
 
     bool WebsocketsClient::available(bool activeTest) {
@@ -160,23 +166,21 @@ namespace websockets {
         return _connectionOpen;
     }
 
-    void WebsocketsClient::ping(WSString data) {
-        WebsocketsEndpoint::ping(data);
+    bool WebsocketsClient::ping(WSString data) {
+        return WebsocketsEndpoint::ping(data);
     }
 
-    void WebsocketsClient::pong(WSString data) {
-        WebsocketsEndpoint::pong(data);
+    bool WebsocketsClient::pong(WSString data) {
+        return WebsocketsEndpoint::pong(data);
     }
 
     void WebsocketsClient::close() {
         if(available()) {
             this->_connectionOpen = false;
-            WebsocketsEndpoint::close(true);
         }
     }
 
     void WebsocketsClient::_handlePing(WebsocketsMessage message) {
-        WebsocketsEndpoint::pong(message.data());
         this->_eventsCallback(WebsocketsEvent::GotPing, message.data());
     }
 
@@ -185,11 +189,10 @@ namespace websockets {
     }
 
     void WebsocketsClient::_handleClose(WebsocketsMessage message) {
-        this->_eventsCallback(WebsocketsEvent::ConnectionClosed, message.data());
         if(available()) {
             this->_connectionOpen = false;
-            WebsocketsEndpoint::close(false);
         }
+        this->_eventsCallback(WebsocketsEvent::ConnectionClosed, message.data());
     }
 
     WebsocketsClient::~WebsocketsClient() {
