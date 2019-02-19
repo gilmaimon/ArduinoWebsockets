@@ -26,7 +26,6 @@ const char* websockets_server_host = "www.myserver.com"; //Enter server adress
 const uint16_t websockets_server_port = 8080; // Enter server port
 
 using namespace websockets;
-using namespace websockets::network;
 
 void onMessageCallback(WebsocketsMessage message) {
     Serial.print("Got Message: ");
@@ -45,7 +44,7 @@ void onEventsCallback(WebsocketsEvent event, WSString data) {
     }
 }
 
-WebsocketsClient client(new Esp8266TcpClient);
+WebsocketsClient client;
 void setup() {
     Serial.begin(115200);
     // Connect to wifi
@@ -74,16 +73,7 @@ void loop() {
     client.poll();
 }
 ```
-
-***Note**: for esp32, replace:* 
-```c++
-new Esp8266TcpClient
-``` 
-*with*
-```c++
-new Esp32cpClient
-```
-
+***Note:** for ESP32 you only need to change to code that connects to WiFi (the #include), everything else stays the same.*
 
 ## Contributing
 Contributions are welcomed! Please open issues if you have troubles while using the library or any queshtions on how to get started. Pull requests are welcomed, please open an issue first.
@@ -91,3 +81,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 ## Change Log
 - **14/02/2019 (v0.1.1)** - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
 - **16/02/2019 (v0.1.2)** - Added support for events (Pings, Pongs) and more internal improvements (events handling according to [RFC-6455](https://tools.ietf.org/html/rfc6455))
+- **20/02/2019 (v0.1.3)** - Users now dont have to specify TCP client types (ESP8266/ESP32) they are selected automatically.
