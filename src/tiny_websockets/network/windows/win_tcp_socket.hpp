@@ -2,10 +2,19 @@
 
 #ifdef _WIN32 
 
-#include "ws_common.h"
-#include "network/tcp_client.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/network/tcp_client.hpp>
+
+#define WIN32_LEAN_AND_MEAN
+
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x501
 
 #include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 namespace websockets { namespace network {
     class WinTcpSocket : public TcpSocket {

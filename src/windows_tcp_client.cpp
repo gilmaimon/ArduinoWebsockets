@@ -1,17 +1,6 @@
-#include "network/windows/win_tcp_client.h"
+#include <tiny_websockets/network/windows/win_tcp_client.hpp>
 
 #ifdef _WIN32
-
-#define WIN32_LEAN_AND_MEAN
-
-#undef _WIN32_WINNT
-#define _WIN32_WINNT 0x501
-
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 namespace websockets { namespace network {
 	/*

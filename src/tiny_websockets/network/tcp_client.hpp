@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ws_common.h"
-#include "network/tcp_socket.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/network/tcp_socket.hpp>
 
 namespace websockets { namespace network {
 	struct TcpClient : public TcpSocket {

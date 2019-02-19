@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ws_common.h"
-#include "network/tcp_client.h"
-#include "websockets/data_frame.h"
-#include "websockets/websockets_endpoint.h"
-#include "websockets/message.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/network/tcp_client.hpp>
+#include <tiny_websockets/internals/data_frame.hpp>
+#include <tiny_websockets/internals/websockets_endpoint.hpp>
+#include <tiny_websockets/message.hpp>
 #include <functional>
 
 namespace websockets {
@@ -18,9 +18,9 @@ namespace websockets {
 
 	class WebsocketsClient : private internals::WebsocketsEndpoint {
 	public:
-		WebsocketsClient(network::TcpClient* client);
+		WebsocketsClient(network::TcpClient* client = new DEFAULT_CLIENT);
 		
-		template <class TcpClientTy>
+		template <class TcpClientTy = DEFAULT_CLIENT>
 		static WebsocketsClient Create(TcpClientTy* clientPtr = new TcpClientTy) {
 			return WebsocketsClient(clientPtr);
 		}

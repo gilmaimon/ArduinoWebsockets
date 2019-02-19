@@ -31,7 +31,6 @@ const char* websockets_server_host = "serverip_or_name"; //Enter server adress
 const uint16_t websockets_server_port = 8080; // Enter server port
 
 using namespace websockets;
-using namespace websockets::network;
 
 void onMessageCallback(WebsocketsMessage message) {
     Serial.print("Got Message: ");
@@ -50,7 +49,7 @@ void onEventsCallback(WebsocketsEvent event, WSString data) {
     }
 }
 
-WebsocketsClient client(new Esp8266TcpClient);
+WebsocketsClient client;
 void setup() {
     Serial.begin(115200);
     // Connect to wifi

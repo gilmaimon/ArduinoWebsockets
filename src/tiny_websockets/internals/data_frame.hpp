@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ws_common.h"
+#include <tiny_websockets/internals/ws_common.hpp>
 
 namespace websockets { namespace internals {
 	struct WebsocketsFrame {

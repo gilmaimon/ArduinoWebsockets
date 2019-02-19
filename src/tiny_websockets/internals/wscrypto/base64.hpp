@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ws_common.h"
+#include <tiny_websockets/internals/ws_common.hpp>
 
 namespace websockets { namespace crypto { namespace internals {
 /* 
-   base64.cpp and base64.h
+   base64.cpp and base64.hpp
 
    Copyright (C) 2004-2008 René Nyffenegger
 

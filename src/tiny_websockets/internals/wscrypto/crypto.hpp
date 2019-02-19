@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ws_common.h"
-#include "wscrypto/base64.h"
-#include "wscrypto/sha1.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/internals/wscrypto/base64.hpp>
+#include <tiny_websockets/internals/wscrypto/sha1.hpp>
 
 #ifndef _WS_CONFIG_NO_TRUE_RANDOMNESS
 #include <time.h>
@@ -43,7 +43,10 @@ namespace websockets { namespace crypto {
   }
 #else
   WSString randomBytes(size_t len) {
-    srand(time(NULL));
+    static int onlyOnce = [](){
+      srand(time(NULL));
+      return 0;
+    }();
 
     WSString result;
     result.reserve(len);

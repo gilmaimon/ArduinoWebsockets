@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ws_common.h"
-#include "network/tcp_client.h"
-#include "websockets/data_frame.h"
-#include "websockets/message.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/network/tcp_client.hpp>
+#include <tiny_websockets/internals/data_frame.hpp>
+#include <tiny_websockets/message.hpp>
 
 namespace websockets { namespace internals {
     class WebsocketsEndpoint {

@@ -1,14 +1,14 @@
 #pragma once
 
-#ifdef ESP8266 
+#ifdef ESP32 
 
-#include "ws_common.h"
-#include "network/tcp_client.h"
+#include <tiny_websockets/internals/ws_common.hpp>
+#include <tiny_websockets/network/tcp_client.hpp>
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 
 namespace websockets { namespace network {
-	class Esp8266TcpClient : public TcpClient {
+	class Esp32TcpClient : public TcpClient {
 	public:
 		bool connect(WSString host, int port) {
 			return client.connect(host.c_str(), port);
@@ -50,7 +50,7 @@ namespace websockets { namespace network {
 			client.stop();
 		}
 
-		virtual ~Esp8266TcpClient() {
+		virtual ~Esp32TcpClient() {
 			client.stop();
 		}
 	private:
@@ -58,4 +58,4 @@ namespace websockets { namespace network {
 	};
 }} // websockets::network
 
-#endif // #ifdef ESP8266 
+#endif // #ifdef ESP32 
