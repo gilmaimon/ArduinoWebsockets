@@ -8,7 +8,7 @@ before_install:
   - mv arduino-cli-*-linux64 $HOME/bin/arduino-cli
   - mkdir -p $HOME/bin
   - arduino-cli config init
-  - mv $PWD/travis/.cli-config.yml $HOME/bin/.cli-config.yml
+  - mv $PWD/travis/.cli-config.yml $HOME/.arduino15/arduino-cli.yaml
   - arduino-cli config dump
   - export PATH=$PATH:$HOME/bin
   - arduino-cli core update-index
