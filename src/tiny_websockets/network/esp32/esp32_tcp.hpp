@@ -4,13 +4,14 @@
 
 #include <tiny_websockets/internals/ws_common.hpp>
 #include <tiny_websockets/network/tcp_client.hpp>
+#include <Arduino.h>
 
 #include <WiFi.h>
 
 namespace websockets { namespace network {
 	class Esp32TcpClient : public TcpClient {
 	public:
-		bool connect(WSString host, int port) {
+		bool connect(WSString host, int port) : closed(false) {
 			return client.connect(host.c_str(), port);
 		}
 
@@ -19,7 +20,14 @@ namespace websockets { namespace network {
 		}
 
 		bool available() override {
-			return client.connected();
+			return !closed;
+			/*
+				NOTE: it seems like there is a bug in esp32 impl of connected(). the method returns false
+			          even when the connection is active and can still be used. This is why a socket is assumed here 
+					  to be open unless it was manually closed.
+					  TODO: this is bad, and should be fixed in some way.
+			*/
+			//return client.connected();
 		}
 
 		void send(WSString data) override {
@@ -47,14 +55,17 @@ namespace websockets { namespace network {
 		}
 
 		void close() override {
+			closed = true;
 			client.stop();
 		}
 
 		virtual ~Esp32TcpClient() {
+			closed = true;
 			client.stop();
 		}
 	private:
 		WiFiClient client;
+		bool closed = false;
 	};
 }} // websockets::network
 
