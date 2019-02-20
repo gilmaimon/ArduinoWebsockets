@@ -25,8 +25,9 @@ namespace websockets {
 			return WebsocketsClient(clientPtr);
 		}
 
+		bool connect(WSString url);
 		bool connect(WSString host, int port, WSString path);
-
+		
 		void onMessage(MessageCallback callback);
 		void onEvent(EventCallback callback);
 

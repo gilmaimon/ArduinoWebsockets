@@ -88,6 +88,44 @@ namespace websockets {
         return true;
     }
 
+    bool WebsocketsClient::connect(WSString url) {
+        WSString protocol = "";
+        if(doestStartsWith(url, "http://")) {
+            protocol = "http";
+            url = url.substr(strlen("http://"));
+        } else if(doestStartsWith(url, "ws://")) {
+            protocol = "ws";
+            url = url.substr(strlen("ws://"));
+        } else {
+            return false;
+            // Not supported
+        }
+
+        auto uriBeg = url.find_first_of('/');
+        std::string host = url, uri = "/";
+
+        if(static_cast<int>(uriBeg) != -1) {
+            uri = url.substr(uriBeg);
+            host = url.substr(0, uriBeg);
+        }
+
+        auto portIdx = host.find_first_of(':');
+        int port = 80;
+        if(static_cast<int>(portIdx) != -1) {
+            auto onlyHost = host.substr(0, portIdx);
+            ++portIdx;
+            port = 0;
+            while(portIdx < host.size() && host[portIdx] >= '0' && host[portIdx] <= '9') {
+                port = port * 10 + (host[portIdx] - '0');
+                ++portIdx;
+            }
+
+            host = onlyHost;
+        }
+        
+        return connect(host, port, uri);
+    }
+
     bool WebsocketsClient::connect(WSString host, int port, WSString path) {
         this->_connectionOpen = this->_client->connect(host, port);
         if (!this->_connectionOpen) return false;
