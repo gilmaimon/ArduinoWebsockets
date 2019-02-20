@@ -15,7 +15,6 @@ before_install:
   - arduino-cli core install arduino:avr
   - arduino-cli core install esp8266:esp8266
   - arduino-cli core install esp32:esp32
-  - arduino-cli lib install ArduinoJson@5.13.4
   - buildExampleSketchEsp8266() { arduino-cli compile --warnings all --fqbn esp8266:esp8266:generic $PWD/examples/$1; }
   - buildExampleSketchEsp32() { arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 $PWD/examples/$1; }
 install:
