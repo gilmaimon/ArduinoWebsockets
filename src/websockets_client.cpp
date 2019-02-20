@@ -18,10 +18,11 @@ namespace websockets {
         WSString requestStr;
         WSString expectedAcceptKey;
     };
-    HandshakeRequestResult generateHandshake(WSString uri) {
+    HandshakeRequestResult generateHandshake(WSString host, WSString uri) {
         WSString key = crypto::base64Encode(crypto::randomBytes(16));
 
         WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
+        handshake += "Host: " + host + "\r\n";
         handshake += "Upgrade: websocket\r\n";
         handshake += "Connection: Upgrade\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
@@ -57,11 +58,11 @@ namespace websockets {
             ++idx;
             while(idx < responseHeaders.size() && isWhitespace(responseHeaders[idx])) idx++;
 
-            // read header value until \r\n or whitespace
-            while(idx < responseHeaders.size() && !isWhitespace(responseHeaders[idx])) value += responseHeaders[idx++];
+            // read header value until \r
+            while(idx < responseHeaders.size() && responseHeaders[idx] != '\r') value += responseHeaders[idx++];
 
-            // ignore rest of whitespace
-            while(idx < responseHeaders.size() && isWhitespace(responseHeaders[idx])) idx++;
+            // skip \r\n
+            idx += 2;
 
             if(key == "Upgrade") {
                 didUpgradeToWebsockets = (value == "websocket");
@@ -78,15 +79,24 @@ namespace websockets {
         return result;
     }
 
+    bool doestStartsWith(WSString str, WSString prefix) {
+        if(str.size() < prefix.size()) return false;
+        for(size_t i = 0; i < prefix.size(); i++) {
+            if(str[i] != prefix[i]) return false;
+        }
+
+        return true;
+    }
+
     bool WebsocketsClient::connect(WSString host, int port, WSString path) {
         this->_connectionOpen = this->_client->connect(host, port);
         if (!this->_connectionOpen) return false;
 
-        auto handshake = generateHandshake(path);
+        auto handshake = generateHandshake(host, path);
         this->_client->send(handshake.requestStr);
 
         auto head = this->_client->readLine();
-        if(head != "HTTP/1.1 101 Switching Protocols\r\n") {
+        if(!doestStartsWith(head, "HTTP/1.1 101")) {
             close();
             return false;
         }
@@ -98,7 +108,6 @@ namespace websockets {
             serverResponseHeaders += line;
             if (line == "\r\n") break;
         }
-
         auto parsedResponse = parseHandshakeResponse(serverResponseHeaders);
         
 #ifdef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
