@@ -82,3 +82,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **14/02/2019 (v0.1.1)** - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
 - **16/02/2019 (v0.1.2)** - Added support for events (Pings, Pongs) and more internal improvements (events handling according to [RFC-6455](https://tools.ietf.org/html/rfc6455))
 - **20/02/2019 (v0.1.3)** - Users now dont have to specify TCP client types (ESP8266/ESP32) they are selected automatically.
+- **21/02/2019 (v0.1.5)** - Bug Fixes. Client now exposes a single string connect interface.
