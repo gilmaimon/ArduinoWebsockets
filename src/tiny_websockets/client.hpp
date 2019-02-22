@@ -36,6 +36,8 @@ namespace websockets {
 
 		bool send(WSString data);
 		bool sendBinary(WSString data);
+		
+		WebsocketsMessage readBlocking();
 
 		bool ping(WSString data = "");
 		bool pong(WSString data = "");

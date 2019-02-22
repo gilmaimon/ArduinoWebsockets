@@ -123,7 +123,7 @@ namespace websockets { namespace internals {
     bool WebsocketsEndpoint::send(WSString data, uint8_t opcode, bool mask, uint8_t maskingKey[4]) {        
         Header header;
         header.fin = 1;
-        header.flags = 0b000;
+        header.flags = 0;
         header.opcode = opcode;
         header.mask = mask? 1: 0;
         header.payload = data.size() < 126? data.size(): data.size() > 1<<16? 127: 126;

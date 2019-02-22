@@ -18,12 +18,12 @@ namespace websockets {
     // The class the user will interact with as a message
     // This message can be partial (so practically this is a Frame and not a message)
     struct WebsocketsMessage {
-        WebsocketsMessage(MessageType type, WSString data, bool fragmented = false) : _type(type), _data(data), _fragmented(fragmented) {}
-        static WebsocketsMessage CreateBinary(WSString data, bool partial = false) {
-            return WebsocketsMessage(MessageType::Binary, data, partial);
+        WebsocketsMessage(MessageType msgType, WSString msgData, bool fragmented = false) : _type(msgType), _data(msgData), _fragmented(fragmented) {}
+        static WebsocketsMessage CreateBinary(WSString msgData, bool partial = false) {
+            return WebsocketsMessage(MessageType::Binary, msgData, partial);
         }
-        static WebsocketsMessage CreateText(WSString data, bool partial = false) {
-            return WebsocketsMessage(MessageType::Text, data, partial);
+        static WebsocketsMessage CreateText(WSString msgData, bool partial = false) {
+            return WebsocketsMessage(MessageType::Text, msgData, partial);
         }
 
         static WebsocketsMessage CreateFromFrame(internals::WebsocketsFrame frame) {

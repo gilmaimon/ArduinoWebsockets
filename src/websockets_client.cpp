@@ -190,6 +190,10 @@ namespace websockets {
         return messageReceived;
     }
 
+    WebsocketsMessage WebsocketsClient::readBlocking() {
+        return WebsocketsEndpoint::recv();
+    }
+
     bool WebsocketsClient::send(WSString data) {
         if(available()) {
             return WebsocketsEndpoint::send(data, MessageType::Text);
