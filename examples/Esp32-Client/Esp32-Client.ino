@@ -57,7 +57,7 @@ void setup() {
     // run callback when messages are received
     client.onMessage([&](WebsocketsMessage message){
         Serial.print("Got Message: ");
-        Serial.println(message.data().c_str());
+        Serial.println(message.data());
     });
 }
 

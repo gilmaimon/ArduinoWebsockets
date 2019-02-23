@@ -10,7 +10,7 @@ namespace websockets {
         _client(client), 
         _connectionOpen(false),
         _messagesCallback([](WebsocketsMessage){}),
-        _eventsCallback([](WebsocketsEvent, WSString){}) {
+        _eventsCallback([](WebsocketsEvent, String){}) {
         // Empty
     }
 

@@ -14,7 +14,7 @@ namespace websockets {
 		GotPing, GotPong
 	};
     typedef std::function<void(WebsocketsMessage)> MessageCallback;
-    typedef std::function<void(WebsocketsEvent, WSString data)> EventCallback;
+    typedef std::function<void(WebsocketsEvent, String data)> EventCallback;
 
 	class WebsocketsClient : private internals::WebsocketsEndpoint {
 	public:
