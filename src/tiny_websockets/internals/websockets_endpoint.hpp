@@ -11,6 +11,7 @@ namespace websockets { namespace internals {
         WebsocketsEndpoint(network::TcpSocket& socket);
         bool poll();
         WebsocketsMessage recv();
+        bool send(uint8_t* data, size_t len, uint8_t opcode, bool mask = false, uint8_t maskingKey[4] = nullptr);    
         bool send(WSString data, uint8_t opcode, bool mask = false, uint8_t maskingKey[4] = nullptr);    
         
         bool ping(WSString msg = "");

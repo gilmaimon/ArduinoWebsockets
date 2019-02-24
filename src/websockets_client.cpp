@@ -5,12 +5,11 @@
 #include <tiny_websockets/internals/wscrypto/crypto.hpp>
 
 namespace websockets {
-    WebsocketsClient::WebsocketsClient(network::TcpClient* client) : 
-        WebsocketsEndpoint(*client), 
-        _client(client), 
+    WebsocketsClient::WebsocketsClient() : 
+        WebsocketsEndpoint(_client), 
         _connectionOpen(false),
         _messagesCallback([](WebsocketsMessage){}),
-        _eventsCallback([](WebsocketsEvent, String){}) {
+        _eventsCallback([](WebsocketsEvent, WSInterfaceString){}) {
         // Empty
     }
 
@@ -127,13 +126,13 @@ namespace websockets {
     }
 
     bool WebsocketsClient::connect(WSString host, int port, WSString path) {
-        this->_connectionOpen = this->_client->connect(host, port);
+        this->_connectionOpen = this->_client.connect(host, port);
         if (!this->_connectionOpen) return false;
 
         auto handshake = generateHandshake(host, path);
-        this->_client->send(handshake.requestStr);
+        this->_client.send(handshake.requestStr);
 
-        auto head = this->_client->readLine();
+        auto head = this->_client.readLine();
         if(!doestStartsWith(head, "HTTP/1.1 101")) {
             close();
             return false;
@@ -142,7 +141,7 @@ namespace websockets {
         WSString serverResponseHeaders = "";
         WSString line = "";
         while (true) {
-            line = this->_client->readLine();
+            line = this->_client.readLine();
             serverResponseHeaders += line;
             if (line == "\r\n") break;
         }
@@ -158,7 +157,7 @@ namespace websockets {
             return false;
         }
 
-        this->_eventsCallback(WebsocketsEvent::ConnectionOpened, "");
+        this->_eventsCallback(WebsocketsEvent::ConnectionOpened, {});
         return true;
     }
 
@@ -201,6 +200,13 @@ namespace websockets {
         return false;
     }
 
+    bool WebsocketsClient::send(char* data, size_t len) {
+        if(available()) {
+            return WebsocketsEndpoint::send(data, len, MessageType::Text);
+        }
+        return false;
+    }
+
     bool WebsocketsClient::sendBinary(WSString data) {
         if(available()) {
             return WebsocketsEndpoint::send(data, MessageType::Binary);
@@ -208,8 +214,15 @@ namespace websockets {
         return false;
     }
 
+    bool WebsocketsClient::sendBinary(uint8_t* data, size_t len) {
+        if(available()) {
+            return WebsocketsEndpoint::send(data, len, MessageType::Binary);
+        }
+        return false;
+    }
+
     bool WebsocketsClient::available(bool activeTest) {
-        this->_connectionOpen &= this->_client->available();
+        this->_connectionOpen &= this->_client.available();
         if(this->_connectionOpen && activeTest)  {
             WebsocketsEndpoint::ping();
         }
@@ -243,9 +256,5 @@ namespace websockets {
             this->_connectionOpen = false;
         }
         this->_eventsCallback(WebsocketsEvent::ConnectionClosed, message.data());
-    }
-
-    WebsocketsClient::~WebsocketsClient() {
-        delete this->_client;
     }
 }
