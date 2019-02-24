@@ -34,10 +34,10 @@ using namespace websockets;
 
 void onMessageCallback(WebsocketsMessage message) {
     Serial.print("Got Message: ");
-    Serial.println(message.data().c_str());
+    Serial.println(message.data());
 }
 
-void onEventsCallback(WebsocketsEvent event, WSString data) {
+void onEventsCallback(WebsocketsEvent event, String data) {
     if(event == WebsocketsEvent::ConnectionOpened) {
         Serial.println("Connnection Opened");
     } else if(event == WebsocketsEvent::ConnectionClosed) {

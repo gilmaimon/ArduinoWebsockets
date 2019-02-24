@@ -14,16 +14,11 @@ namespace websockets {
 		GotPing, GotPong
 	};
     typedef std::function<void(WebsocketsMessage)> MessageCallback;
-    typedef std::function<void(WebsocketsEvent, WSString data)> EventCallback;
+    typedef std::function<void(WebsocketsEvent, WSInterfaceString data)> EventCallback;
 
 	class WebsocketsClient : private internals::WebsocketsEndpoint {
 	public:
-		WebsocketsClient(network::TcpClient* client = new DEFAULT_CLIENT);
-		
-		template <class TcpClientTy = DEFAULT_CLIENT>
-		static WebsocketsClient Create(TcpClientTy* clientPtr = new TcpClientTy) {
-			return WebsocketsClient(clientPtr);
-		}
+		WebsocketsClient();
 
 		bool connect(WSString url);
 		bool connect(WSString host, int port, WSString path);
@@ -35,7 +30,9 @@ namespace websockets {
 		bool available(bool activeTest = false);
 
 		bool send(WSString data);
+		bool send(char* data, size_t len);
 		bool sendBinary(WSString data);
+		bool sendBinary(uint8_t* data, size_t len);
 		
 		WebsocketsMessage readBlocking();
 
@@ -44,10 +41,8 @@ namespace websockets {
 
 		void close();
 
-		~WebsocketsClient();
-
 	private:
-		network::TcpClient* _client;
+		WSDefaultTcpClient _client;
 		bool _connectionOpen;
 		MessageCallback _messagesCallback;
 		EventCallback _eventsCallback;

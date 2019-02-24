@@ -106,7 +106,7 @@ namespace websockets { namespace internals {
                 break; // Intentionally Empty
             
             case MessageType::Ping:
-                pong(msg.data());
+                pong(internals::fromInterfaceString(msg.data()));
                 break;
 
             case MessageType::Pong:
@@ -120,20 +120,24 @@ namespace websockets { namespace internals {
         return std::move(msg);
     }
 
-    bool WebsocketsEndpoint::send(WSString data, uint8_t opcode, bool mask, uint8_t maskingKey[4]) {        
+    bool WebsocketsEndpoint::send(WSString data, uint8_t opcode, bool mask, uint8_t maskingKey[4]) { 
+        return send(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size(), opcode, mask, maskingKey);
+    }
+
+    bool WebsocketsEndpoint::send(uint8_t* data, size_t len, uint8_t opcode, bool mask, uint8_t maskingKey[4]) {
         Header header;
         header.fin = 1;
         header.flags = 0;
         header.opcode = opcode;
         header.mask = mask? 1: 0;
-        header.payload = data.size() < 126? data.size(): data.size() > 1<<16? 127: 126;
+        header.payload = len < 126? len: len > 1<<16? 127: 126;
 
         // send initial header
         this->_socket.send(reinterpret_cast<uint8_t*>(&header), 2);
 
         if(header.payload == 126) {
             // send 16 bit length
-            uint16_t extendedLen = data.size();
+            uint16_t extendedLen = len;
             // swap the bytes
             extendedLen = extendedLen << 8 | extendedLen >> 8;
 
@@ -147,7 +151,7 @@ namespace websockets { namespace internals {
             this->_socket.send(reinterpret_cast<uint8_t*>(maskingKey), 4);
         }
 
-        this->_socket.send(data);
+        this->_socket.send(data, len);
         return true; // TODO dont assume success
     }
 

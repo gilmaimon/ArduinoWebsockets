@@ -8,7 +8,7 @@ A library for writing modern websockets applications with Arduino (ESP8266 and E
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.1.2) the library only works with `ESP8266` and `ESP32`.
+Currently (version 0.2.0) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
@@ -29,10 +29,10 @@ using namespace websockets;
 
 void onMessageCallback(WebsocketsMessage message) {
     Serial.print("Got Message: ");
-    Serial.println(message.data().c_str());
+    Serial.println(message.data());
 }
 
-void onEventsCallback(WebsocketsEvent event, WSString data) {
+void onEventsCallback(WebsocketsEvent event, String data) {
     if(event == WebsocketsEvent::ConnectionOpened) {
         Serial.println("Connnection Opened");
     } else if(event == WebsocketsEvent::ConnectionClosed) {
@@ -83,3 +83,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **16/02/2019 (v0.1.2)** - Added support for events (Pings, Pongs) and more internal improvements (events handling according to [RFC-6455](https://tools.ietf.org/html/rfc6455))
 - **20/02/2019 (v0.1.3)** - Users now dont have to specify TCP client types (ESP8266/ESP32) they are selected automatically.
 - **21/02/2019 (v0.1.5)** - Bug Fixes. Client now exposes a single string connect interface.
+- **24/02/2019 (v0.2.0)** - User-facing interface is now done with Arduino's `String` class. Merged more changes (mainly optimizations) from TinyWebsockets.
