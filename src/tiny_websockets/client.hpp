@@ -20,8 +20,8 @@ namespace websockets {
 	public:
 		WebsocketsClient();
 
-		bool connect(WSString url);
-		bool connect(WSString host, int port, WSString path);
+		bool connect(WSInterfaceString url);
+		bool connect(WSInterfaceString host, int port, WSInterfaceString path);
 		
 		void onMessage(MessageCallback callback);
 		void onEvent(EventCallback callback);
@@ -29,15 +29,15 @@ namespace websockets {
 		bool poll();
 		bool available(bool activeTest = false);
 
-		bool send(WSString data);
+		bool send(WSInterfaceString data);
 		bool send(char* data, size_t len);
-		bool sendBinary(WSString data);
+		bool sendBinary(WSInterfaceString data);
 		bool sendBinary(uint8_t* data, size_t len);
 		
 		WebsocketsMessage readBlocking();
 
-		bool ping(WSString data = "");
-		bool pong(WSString data = "");
+		bool ping(WSInterfaceString data = "");
+		bool pong(WSInterfaceString data = "");
 
 		void close();
 

@@ -87,7 +87,8 @@ namespace websockets {
         return true;
     }
 
-    bool WebsocketsClient::connect(WSString url) {
+    bool WebsocketsClient::connect(WSInterfaceString _url) {
+        WSString url = internals::fromInterfaceString(_url);
         WSString protocol = "";
         if(doestStartsWith(url, "http://")) {
             protocol = "http";
@@ -122,14 +123,18 @@ namespace websockets {
             host = onlyHost;
         }
         
-        return connect(host, port, uri);
+        return this->connect(
+            internals::fromInternalString(host), 
+            port, 
+            internals::fromInternalString(uri)
+        );
     }
 
-    bool WebsocketsClient::connect(WSString host, int port, WSString path) {
-        this->_connectionOpen = this->_client.connect(host, port);
+    bool WebsocketsClient::connect(WSInterfaceString host, int port, WSInterfaceString path) {
+        this->_connectionOpen = this->_client.connect(internals::fromInterfaceString(host), port);
         if (!this->_connectionOpen) return false;
 
-        auto handshake = generateHandshake(host, path);
+        auto handshake = generateHandshake(internals::fromInterfaceString(host), internals::fromInterfaceString(path));
         this->_client.send(handshake.requestStr);
 
         auto head = this->_client.readLine();
@@ -193,9 +198,9 @@ namespace websockets {
         return WebsocketsEndpoint::recv();
     }
 
-    bool WebsocketsClient::send(WSString data) {
+    bool WebsocketsClient::send(WSInterfaceString data) {
         if(available()) {
-            return WebsocketsEndpoint::send(data, MessageType::Text);
+            return WebsocketsEndpoint::send(internals::fromInterfaceString(data), MessageType::Text);
         }
         return false;
     }
@@ -207,9 +212,9 @@ namespace websockets {
         return false;
     }
 
-    bool WebsocketsClient::sendBinary(WSString data) {
+    bool WebsocketsClient::sendBinary(WSInterfaceString data) {
         if(available()) {
-            return WebsocketsEndpoint::send(data, MessageType::Binary);
+            return WebsocketsEndpoint::send(internals::fromInterfaceString(data), MessageType::Binary);
         }
         return false;
     }
@@ -229,12 +234,12 @@ namespace websockets {
         return _connectionOpen;
     }
 
-    bool WebsocketsClient::ping(WSString data) {
-        return WebsocketsEndpoint::ping(data);
+    bool WebsocketsClient::ping(WSInterfaceString data) {
+        return WebsocketsEndpoint::ping(internals::fromInterfaceString(data));
     }
 
-    bool WebsocketsClient::pong(WSString data) {
-        return WebsocketsEndpoint::pong(data);
+    bool WebsocketsClient::pong(WSInterfaceString data) {
+        return WebsocketsEndpoint::pong(internals::fromInterfaceString(data));
     }
 
     void WebsocketsClient::close() {
