@@ -84,3 +84,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **20/02/2019 (v0.1.3)** - Users now dont have to specify TCP client types (ESP8266/ESP32) they are selected automatically.
 - **21/02/2019 (v0.1.5)** - Bug Fixes. Client now exposes a single string connect interface.
 - **24/02/2019 (v0.2.0)** - User-facing interface is now done with Arduino's `String` class. Merged more changes (mainly optimizations) from TinyWebsockets.
+- **25/02/2019 (v0.2.1)** - A tiny patch. Fixed missing user-facing strings for client interface. 
