@@ -4,47 +4,36 @@
 
 #include <tiny_websockets/internals/ws_common.hpp>
 #include <tiny_websockets/network/tcp_client.hpp>
-#include <tiny_websockets/network/windows/win_tcp_socket.hpp>
+
+#define WIN32_LEAN_AND_MEAN
+
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x501
+
+#include <winsock2.h>
+#include <windows.h>
+#include <ws2tcpip.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 namespace websockets { namespace network {
-	class WinTcpClient : public TcpClient {
-	public:
-		bool connect(WSString host, int port) {
-			return socket.connect(host, port);
-		}
+    class WinTcpClient : public TcpClient {
+    public:
+        WinTcpClient(SOCKET s = INVALID_SOCKET);
+        bool connect(WSString host, int port) override;
+        bool poll() override;
+        bool available() override;
+        void send(WSString data) override;
+        void send(uint8_t* data, uint32_t len) override;
+        WSString readLine() override;
+        void read(uint8_t* buffer, uint32_t len) override;
+        void close() override;
+        virtual ~WinTcpClient();
 
-		bool poll() {
-			return socket.poll();
-		}
-
-		bool available() override {
-			return socket.available();
-		}
-
-		void send(WSString data) override {
-			socket.send(data);
-		}
-
-		void send(uint8_t* data, uint32_t len) override {
-			socket.send(data, len);
-		}
-		
-		WSString readLine() override {
-			return socket.readLine();
-		}
-
-		void read(uint8_t* buffer, uint32_t len) override {
-			socket.read(buffer, len);
-		}
-
-		void close() override {
-			socket.close();
-		}
-
-		virtual ~WinTcpClient() {}
-	private:
-		WinTcpSocket socket;
-	};
+    private:
+        SOCKET socket;
+    };
 }} // websockets::network
+
 
 #endif // #ifdef _WIN32 

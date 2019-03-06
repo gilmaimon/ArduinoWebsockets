@@ -3,32 +3,28 @@
 #ifdef _WIN32 
 
 #include <tiny_websockets/internals/ws_common.hpp>
-#include <tiny_websockets/network/tcp_client.hpp>
+#include <tiny_websockets/network/tcp_server.hpp>
 
 #define WIN32_LEAN_AND_MEAN
 
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x501
 
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 namespace websockets { namespace network {
-    class WinTcpSocket : public TcpSocket {
+    class WinTcpServer : public TcpServer {
     public:
-        bool connect(WSString host, int port);
-        bool poll() override;
+        bool listen(uint16_t port) override;
+    TcpClient* accept() override;
         bool available() override;
-        void send(WSString data) override;
-        void send(uint8_t* data, uint32_t len) override;
-        WSString readLine() override;
-        void read(uint8_t* buffer, uint32_t len) override;
+        bool poll() override;
         void close() override;
-        virtual ~WinTcpSocket();
-
+        virtual ~WinTcpServer();
     private:
         SOCKET socket;
     };

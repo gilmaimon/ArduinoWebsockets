@@ -8,13 +8,11 @@
 
 #define INVALID_SOCKET -1
 
-class LinuxTcpSocket;
-
 namespace websockets { namespace network {
-	class LinuxTcpSocket : public TcpSocket {
+  class LinuxTcpClient : public TcpClient {
     public:
-        LinuxTcpSocket();
-        bool connect(WSString host, int port);
+        LinuxTcpClient(int socket = INVALID_SOCKET);
+        bool connect(WSString host, int port) override;
         bool poll() override;
         bool available() override;
         void send(WSString data) override;
@@ -22,50 +20,11 @@ namespace websockets { namespace network {
         WSString readLine() override;
         void read(uint8_t* buffer, uint32_t len) override;
         void close() override;
-        virtual ~LinuxTcpSocket();
+        virtual ~LinuxTcpClient();
 
     private:
         int _socket;
     };
-
-	class LinuxTcpClient : public TcpClient {
-	public:
-		bool connect(WSString host, int port) {
-			return _socket.connect(host, port);
-		}
-
-		bool poll() {
-			return _socket.poll();
-		}
-
-		bool available() override {
-			return _socket.available();
-		}
-
-		void send(WSString data) override {
-			_socket.send(data);
-		}
-
-		void send(uint8_t* data, uint32_t len) override {
-			_socket.send(data, len);
-		}
-		
-		WSString readLine() override {
-			return _socket.readLine();
-		}
-
-		void read(uint8_t* buffer, uint32_t len) override {
-			_socket.read(buffer, len);
-		}
-
-		void close() override {
-			_socket.close();
-		}
-
-		virtual ~LinuxTcpClient() {}
-	private:
-		LinuxTcpSocket _socket;
-	};
 }} // websockets::network
 
 #endif // #ifdef __linux__ 

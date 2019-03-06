@@ -4,47 +4,178 @@
 #include <tiny_websockets/internals/data_frame.hpp>
 
 namespace websockets {
-    enum MessageType {
-        // Data opcdoes
-        Text = 0x1,
-        Binary = 0x2,
+    enum class MessageType {
+        Empty,
+        Text, Binary,
+        Ping, Pong, Close
+    };
 
-        // Control opcodes
-        Close = 0x8,
-        Ping = 0x9,
-        Pong = 0xA
+    MessageType messageTypeFromOpcode(uint8_t opcode);
+
+    enum class MessageRole {
+        Complete, First, Continuation, Last 
     };
 
     // The class the user will interact with as a message
     // This message can be partial (so practically this is a Frame and not a message)
     struct WebsocketsMessage {
-        WebsocketsMessage(MessageType msgType, WSInterfaceString msgData, bool fragmented = false) : _type(msgType), _data(msgData), _fragmented(fragmented) {}
-        static WebsocketsMessage CreateBinary(WSInterfaceString msgData, bool partial = false) {
-            return WebsocketsMessage(MessageType::Binary, msgData, partial);
-        }
-        static WebsocketsMessage CreateText(WSInterfaceString msgData, bool partial = false) {
-            return WebsocketsMessage(MessageType::Text, msgData, partial);
-        }
+        WebsocketsMessage(MessageType msgType, WSString msgData, MessageRole msgRole = MessageRole::Complete) : _type(msgType), _data(internals::fromInternalString(msgData)), _role(msgRole) {}
+        WebsocketsMessage() : WebsocketsMessage(MessageType::Empty, "", MessageRole::Complete) {}
 
-        static WebsocketsMessage CreateFromFrame(internals::WebsocketsFrame frame) {
-            return WebsocketsMessage(
-                static_cast<MessageType>(frame.opcode),
-                internals::fromInternalString(frame.payload),
-                (!frame.fin && frame.opcode != 0) || (frame.fin && frame.opcode == 0)
-            );
+        static WebsocketsMessage CreateFromFrame(internals::WebsocketsFrame frame, MessageType overrideType = MessageType::Empty) {
+            auto type = overrideType;
+            if(type == MessageType::Empty) {
+                type = messageTypeFromOpcode(frame.opcode);
+            }
+
+            // deduce role
+            MessageRole msgRole = MessageRole::Complete;
+            if(frame.isNormalUnfragmentedMessage()) {
+                msgRole = MessageRole::Complete;
+            } else if(frame.isBeginningOfFragmentsStream()) {
+                msgRole = MessageRole::First;
+            } else if(frame.isContinuesFragment()) {
+                msgRole = MessageRole::Continuation;
+            } else if(frame.isEndOfFragmentsStream()) {
+                msgRole = MessageRole::Last;
+            }
+
+            return WebsocketsMessage(type, frame.payload, msgRole);
         }
         
+        // for validation
+        bool isEmpty() const { return this->_type == MessageType::Empty; }
+
+        // Type Helper Functions
+        MessageType type() const { return this->_type; }
+
         bool isText() const { return this->_type == MessageType::Text; }
         bool isBinary() const { return this->_type == MessageType::Binary; }
+        
+        bool isPing() const { return this->_type == MessageType::Ping; }
+        bool isPong() const { return this->_type == MessageType::Pong; }
+        
+        bool isClose() const { return this->_type == MessageType::Close; }
 
-        MessageType type() const { return this->_type; }
+        
+        // Role Helper Function
+        MessageRole role() const { return this->_role; }
+
+        bool isComplete() const { return this->_role == MessageRole::Complete; }
+        bool isPartial() const { return this->_role != MessageRole::Complete; }
+        bool isFirst() const { return this->_role == MessageRole::First; }
+        bool isContinuation() const { return this->_role == MessageRole::Continuation; }
+        bool isLast() const { return this->_role == MessageRole::Last; }
+
+
         WSInterfaceString data() const { return this->_data; }
 
-        bool isFragmented() const { return this->_fragmented; }
+        class StreamBuilder {
+        public:
+            StreamBuilder(bool dummyMode = false) : _dummyMode(dummyMode), _empty(true) {}
+
+            void first(const internals::WebsocketsFrame& frame) {
+                if(this->_empty == false) {
+                    badFragment();
+                    return;
+                }
+
+                this->_empty = false;
+                if(frame.isBeginningOfFragmentsStream()) {
+                    this->_isComplete = false;
+                    this->_didErrored = false;
+
+                    if(this->_dummyMode == false) {
+                        this->_content = frame.payload;
+                    }
+
+                    this->_type = messageTypeFromOpcode(frame.opcode);
+                    if(this->_type == MessageType::Empty) {
+                        badFragment();
+                    }
+                } else {
+                    this->_didErrored = true;
+                }
+            }
+
+            void append(const internals::WebsocketsFrame& frame) {
+                if(isErrored()) return;
+                if(isEmpty() || isComplete()) {
+                    badFragment();
+                    return;
+                }
+
+                if(frame.isContinuesFragment()) {
+                    if(this->_dummyMode == false) {
+                        this->_content += frame.payload;
+                    }
+                } else {
+                    badFragment();
+                }
+            }
+
+            void end(const internals::WebsocketsFrame& frame) {
+                if(isErrored()) return;
+                if(isEmpty() || isComplete()) {
+                    badFragment();
+                    return;
+                }
+
+                if(frame.isEndOfFragmentsStream()) {
+                    if(this->_dummyMode == false) {
+                        this->_content += frame.payload;
+                    }
+                    this->_isComplete = true;
+                } else {
+                    badFragment();
+                }
+            }
+
+            void badFragment() {
+                this->_didErrored = true;
+                this->_isComplete = false;
+            }
+
+            bool isErrored() {
+                return this->_didErrored;
+            }
+
+            bool isOk() {
+                return !this->_didErrored;
+            }
+
+            bool isComplete() {
+                return this->_isComplete;
+            }
+
+            bool isEmpty() {
+                return this->_empty;
+            }
+            
+            MessageType type() {
+                return this->_type;
+            }
+
+            WebsocketsMessage build() {
+                return WebsocketsMessage(
+                    this->_type, 
+                    std::move(this->_content),
+                    MessageRole::Complete
+                );
+            }
+
+        private:
+            bool _dummyMode;
+            bool _empty;
+            bool _isComplete;
+            WSString _content;
+            MessageType _type;
+            bool _didErrored;
+        };
 
     private:
-        MessageType _type;
-        WSInterfaceString _data;
-        bool _fragmented;
+        const MessageType _type;
+        const WSInterfaceString _data;
+        const MessageRole _role;
     };
 }
