@@ -1,8 +1,7 @@
 websockets	KEYWORD1
 network	KEYWORD1
 WebsocketsClient	KEYWORD1
-Esp8266TcpClient	KEYWORD1
-Esp32TcpClient	KEYWORD1
+WebsocketsServer	KEYWORD1
 
 connect	KEYWORD2
 send	KEYWORD2
@@ -15,6 +14,24 @@ ping	KEYWORD2
 pong	KEYWORD2
 close	KEYWORD2
 readBlocking	KEYWORD2
+
+# Server
+listen	KEYWORD2
+poll	KEYWORD2
+accept	KEYWORD2
+
+# Message
+isEmpty	KEYWORD2
+isText	KEYWORD2
+isBinary	KEYWORD2
+isPing	KEYWORD2
+isPong	KEYWORD2
+isClose	KEYWORD2
+isComplete	KEYWORD2
+isPartial	KEYWORD2
+isFirst	KEYWORD2
+isContinuation	KEYWORD2
+isLast	KEYWORD2
 
 WebsocketsMessage	KEYWORD1
 data	KEYWORD2
