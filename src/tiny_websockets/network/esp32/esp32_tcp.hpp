@@ -28,11 +28,11 @@ namespace websockets { namespace network {
     }
 
     void send(WSString data) override {
-      auto sent = client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
+      client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
     }
 
     void send(uint8_t* data, uint32_t len) override {
-      auto sent = client.write(data, len);
+      client.write(data, len);
     }
     
     WSString readLine() override {
@@ -48,7 +48,7 @@ namespace websockets { namespace network {
     }
 
     void read(uint8_t* buffer, uint32_t len) override {
-      auto res = client.read(buffer, len);
+      client.read(buffer, len);
     }
 
     void close() override {
