@@ -15,7 +15,7 @@ Currently (version 0.2.0) the library only works with `ESP8266` and `ESP32`.
 You can install the library from the Arduino IDE or using a release ZIP file from the [Github realese page](https://github.com/gilmaimon/ArduinoWebsockets/releases).
 Detailed instructions can be found [here](https://www.ardu-badge.com/ArduinoWebsockets).
 
-## Full Basic Example
+## Client Example
 ```c++
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
@@ -71,6 +71,59 @@ void setup() {
 
 void loop() {
     client.poll();
+}
+```
+***Note:** for ESP32 you only need to change to code that connects to WiFi (the #include), everything else stays the same.*
+
+## Server Example
+```c++
+#include <ArduinoWebsockets.h>
+#include <ESP8266WiFi.h>
+
+const char* ssid = "ssid"; //Enter SSID
+const char* password = "password"; //Enter Password
+
+using namespace websockets;
+
+WebsocketsServer server;
+void setup() {
+  Serial.begin(115200);
+  // Connect to wifi
+  WiFi.begin(ssid, password);
+
+  // Wait some time to connect to wifi
+  for(int i = 0; i < 15 && WiFi.status() != WL_CONNECTED; i++) {
+      Serial.print(".");
+      delay(1000);
+  }
+  
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());   //You can get IP address assigned to ESP
+
+  server.listen(80);
+  Serial.print("Is server live? ");
+  Serial.println(server.available());
+}
+
+void loop() {
+  auto client = server.accept();
+  if(client.available()) {
+    auto msg = client.readBlocking();
+
+    // log
+    Serial.print("Got Message: ");
+    Serial.println(msg.data());
+
+    // return echo
+    client.send("Echo: " + msg.data());
+
+    // close the connection
+    client.close();
+  }
+  
+  delay(1000);
 }
 ```
 ***Note:** for ESP32 you only need to change to code that connects to WiFi (the #include), everything else stays the same.*
