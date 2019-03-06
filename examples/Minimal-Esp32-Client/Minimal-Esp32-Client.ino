@@ -32,12 +32,12 @@ const uint16_t websockets_server_port = 8080; // Enter server port
 
 using namespace websockets;
 
-void onMessageCallback(WebsocketsMessage message) {
+void onMessageCallback(WebsocketsClient& client, WebsocketsMessage message) {
     Serial.print("Got Message: ");
     Serial.println(message.data());
 }
 
-void onEventsCallback(WebsocketsEvent event, String data) {
+void onEventsCallback(WebsocketsClient& client, WebsocketsEvent event, String data) {
     if(event == WebsocketsEvent::ConnectionOpened) {
         Serial.println("Connnection Opened");
     } else if(event == WebsocketsEvent::ConnectionClosed) {
