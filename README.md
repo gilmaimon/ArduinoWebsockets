@@ -139,3 +139,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **24/02/2019 (v0.2.0)** - User-facing interface is now done with Arduino's `String` class. Merged more changes (mainly optimizations) from TinyWebsockets.
 - **25/02/2019 (v0.2.1)** - A tiny patch. Fixed missing user-facing strings for client interface. 
 - **07/03/2019 (v0.3.0)** - A version update. Now supports a websockets server, better support for fragmented messages and streams. bug fixes and more optimized networking implementations. 
+- **08/03/2019 (v0.3.1)** - Small patch. Merged changes from TinyWebsockets - interface changes to callbacks (partial callbacks without WebsocketsClient& as first parameter).
