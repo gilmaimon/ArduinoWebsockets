@@ -50,7 +50,7 @@ void setup() {
 void loop() {
   auto client = server.accept();
   if(client.available()) {
-    auto msg = client.readBlocking();
+    WebsocketsClient msg = client.readBlocking();
 
     // log
     Serial.print("Got Message: ");
