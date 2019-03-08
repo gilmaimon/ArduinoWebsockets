@@ -16,7 +16,10 @@ namespace websockets {
 
   class WebsocketsClient;
     typedef std::function<void(WebsocketsClient&, WebsocketsMessage)> MessageCallback;
+    typedef std::function<void(WebsocketsMessage)> PartialMessageCallback;
+    
     typedef std::function<void(WebsocketsClient&, WebsocketsEvent, WSInterfaceString)> EventCallback;
+    typedef std::function<void(WebsocketsEvent, WSInterfaceString)> PartialEventCallback;
 
   class WebsocketsClient : private internals::WebsocketsEndpoint {
   public:
@@ -32,7 +35,10 @@ namespace websockets {
     bool connect(WSInterfaceString host, int port, WSInterfaceString path);
     
     void onMessage(MessageCallback callback);
+    void onMessage(PartialMessageCallback callback);
+
     void onEvent(EventCallback callback);
+    void onEvent(PartialEventCallback callback);
 
     bool poll();
     bool available(bool activeTest = false);
