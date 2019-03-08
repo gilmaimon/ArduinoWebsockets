@@ -48,9 +48,9 @@ void setup() {
 }
 
 void loop() {
-  auto client = server.accept();
+  WebsocketsClient client = server.accept();
   if(client.available()) {
-    WebsocketsClient msg = client.readBlocking();
+    WebsocketsMessage msg = client.readBlocking();
 
     // log
     Serial.print("Got Message: ");
