@@ -10,7 +10,7 @@ The library provides simple and easy interface for websockets work (Client and S
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.2.0) the library only works with `ESP8266` and `ESP32`.
+Currently (version 0.3.1) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
