@@ -62,7 +62,8 @@ namespace websockets {
     bool ping(WSInterfaceString data = "");
     bool pong(WSInterfaceString data = "");
 
-    void close();
+    void close(CloseReason reason = CloseReason_NormalClosure);
+    CloseReason getCloseReason();
 
     virtual ~WebsocketsClient();
 

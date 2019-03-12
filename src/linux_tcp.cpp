@@ -53,7 +53,7 @@ namespace websockets { namespace network {
   }
 
   bool linuxTcpSend(int _socket, uint8_t* data, size_t len) {
-    auto res = send(_socket, data, len, 0);
+    auto res = send(_socket, data, len, MSG_NOSIGNAL );
     if(res < 0) {
       return false;
     }

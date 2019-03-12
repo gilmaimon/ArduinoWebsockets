@@ -1,16 +1,124 @@
 #include <tiny_websockets/internals/websockets_endpoint.hpp>
 
-namespace websockets { namespace internals {
-    WebsocketsEndpoint::WebsocketsEndpoint(network::TcpClient& client, FragmentsPolicy fragmentsPolicy) : 
+namespace websockets { 
+
+    CloseReason GetCloseReason(uint16_t reasonCode) {
+        switch(reasonCode) {
+            case CloseReason_NormalClosure: 
+                return CloseReason_NormalClosure;
+            
+            case CloseReason_GoingAway: 
+                return CloseReason_GoingAway;
+            
+            case CloseReason_ProtocolError: 
+                return CloseReason_ProtocolError;
+            
+            case CloseReason_UnsupportedData: 
+                return CloseReason_UnsupportedData;
+            
+            case CloseReason_AbnormalClosure: 
+                return CloseReason_AbnormalClosure;
+            
+            case CloseReason_InvalidPayloadData: 
+                return CloseReason_InvalidPayloadData;
+            
+            case CloseReason_PolicyViolation: 
+                return CloseReason_PolicyViolation;
+            
+            case CloseReason_MessageTooBig: 
+                return CloseReason_MessageTooBig;
+            
+            case CloseReason_NoStatusRcvd: 
+                return CloseReason_NoStatusRcvd;
+            
+            case CloseReason_InternalServerError: 
+                return CloseReason_InternalServerError;
+
+            default: return CloseReason_None;
+        }
+    }    
+
+namespace internals {
+
+    uint32_t swapEndianess(uint32_t num) {
+        uint32_t result = 0;
+
+        uint32_t highest = (num >> 24);
+        uint32_t second = (num << 8) >> 24;
+        uint32_t third = (num << 16) >> 24;
+        uint32_t lowest = (num << 24) >> 24;
+
+        return highest | (second << 8) | (third << 16) | (lowest << 24);
+    }
+
+    uint64_t swapEndianess(uint64_t num) {
+        uint64_t result = 0;
+
+        uint32_t upper = (num >> 32);
+        uint32_t lower = (num << 32) >> 32;
+    
+        upper = swapEndianess(upper);
+        lower = swapEndianess(lower);
+    
+        uint64_t upperLong = upper;
+        uint64_t lowerLong = lower;
+        
+        return upperLong | (lowerLong << 32);
+    }
+
+    WebsocketsEndpoint::WebsocketsEndpoint(network::TcpClient* client, FragmentsPolicy fragmentsPolicy) : 
         _client(client),
         _fragmentsPolicy(fragmentsPolicy),
         _recvMode(RecvMode_Normal),
-        _streamBuilder(fragmentsPolicy == FragmentsPolicy_Notify? true: false) {
+        _streamBuilder(fragmentsPolicy == FragmentsPolicy_Notify? true: false),
+        _closeReason(CloseReason_None) {
         // Empty
     }
 
+    WebsocketsEndpoint::WebsocketsEndpoint(const WebsocketsEndpoint& other) : 
+        _client(other._client), 
+        _fragmentsPolicy(other._fragmentsPolicy), 
+        _recvMode(other._recvMode), 
+        _streamBuilder(other._streamBuilder), 
+        _closeReason(other._closeReason) {
+
+        const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
+    }
+    WebsocketsEndpoint::WebsocketsEndpoint(const WebsocketsEndpoint&& other) : 
+        _client(other._client), 
+        _fragmentsPolicy(other._fragmentsPolicy), 
+        _recvMode(other._recvMode), 
+        _streamBuilder(other._streamBuilder), 
+        _closeReason(other._closeReason) {
+
+        const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
+    }
+
+    WebsocketsEndpoint& WebsocketsEndpoint::operator=(const WebsocketsEndpoint& other) {
+        this->_client = other._client;
+        this->_fragmentsPolicy = other._fragmentsPolicy;
+        this->_recvMode = other._recvMode;
+        this->_streamBuilder = other._streamBuilder;
+        this->_closeReason = other._closeReason;
+
+        const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
+
+        return *this;
+    }
+    WebsocketsEndpoint& WebsocketsEndpoint::operator=(const WebsocketsEndpoint&& other) {
+        this->_client = other._client;
+        this->_fragmentsPolicy = other._fragmentsPolicy;
+        this->_recvMode = other._recvMode;
+        this->_streamBuilder = other._streamBuilder;
+        this->_closeReason = other._closeReason;
+
+        const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
+
+        return *this;
+    }
+
     bool WebsocketsEndpoint::poll() {
-        return this->_client.poll();
+        return this->_client->poll();
     }
 
     Header readHeaderFromSocket(network::TcpClient& socket) {
@@ -32,6 +140,10 @@ namespace websockets { namespace internals {
         }
         else if (header.payload == 127) {
             // TODO: read next 64 bits as payload length and handle such very long messages
+            uint64_t tmp = 0;
+            socket.read(reinterpret_cast<uint8_t*>(&tmp), 8);
+            extendedPayload = swapEndianess(tmp);
+            //extendedPayload = swapEndianess(tmp);
         }
 
         return extendedPayload;
@@ -66,17 +178,23 @@ namespace websockets { namespace internals {
     }
 
     WebsocketsFrame WebsocketsEndpoint::_recv() {
-        auto header = readHeaderFromSocket(this->_client);
-        uint64_t payloadLength = readExtendedPayloadLength(this->_client, header);
+        auto header = readHeaderFromSocket(*this->_client);
+        uint64_t payloadLength = readExtendedPayloadLength(*this->_client, header);
+
+#ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
+        if(payloadLength > _WS_CONFIG_MAX_MESSAGE_SIZE) {
+            return {};
+        }
+#endif
 
         uint8_t maskingKey[4];
         // if masking is set
         if (header.mask) {
-            readMaskingKey(this->_client, maskingKey);
+            readMaskingKey(*this->_client, maskingKey);
         }
 
         // read the message's payload (data) according to the read length
-        WSString data = readData(this->_client, payloadLength);
+        WSString data = readData(*this->_client, payloadLength);
 
         // if masking is set un-mask the message
         if (header.mask) {
@@ -147,7 +265,7 @@ namespace websockets { namespace internals {
         } 
         
         // Error
-        close();
+        close(CloseReason_ProtocolError);
         return {};
     }
 
@@ -164,12 +282,15 @@ namespace websockets { namespace internals {
 
         // This is an error. a bad combination of opcodes and fin flag arrived.
         // Close the connectiong and TODO: indicate ERROR
-        close();
+        close(CloseReason_ProtocolError);
         return {};
     }
 
     WebsocketsMessage WebsocketsEndpoint::recv() {        
         auto frame = _recv();
+        if (frame.isEmpty()) {
+            return {};
+        }
 
         if(this->_recvMode == RecvMode_Normal) {
             return handleFrameInStandardMode(frame);
@@ -183,7 +304,15 @@ namespace websockets { namespace internals {
         if(msg.isPing()) {
             pong(internals::fromInterfaceString(msg.data()));
         } else if(msg.isClose()) {
-            close();
+            // is there a reason field
+            if(internals::fromInterfaceString(msg.data()).size() >= 2) {
+                uint16_t reason = *(reinterpret_cast<const uint16_t*>(msg.data().c_str()));
+                reason = reason >> 8 | reason << 8;
+                this->_closeReason = GetCloseReason(reason);
+            } else {
+                this->_closeReason = CloseReason_GoingAway;
+            }
+            close(this->_closeReason);
         }
     }
 
@@ -191,46 +320,69 @@ namespace websockets { namespace internals {
         return send(data.c_str(), data.size(), opcode, fin, mask, maskingKey);
     }
 
-    bool WebsocketsEndpoint::send(const char* data, size_t len, uint8_t opcode, bool fin, bool mask, uint8_t maskingKey[4]) {
-        HeaderWithExtended header;
-        header.fin = fin;
-        header.flags = 0;
-        header.opcode = opcode;
-        header.mask = mask? 1: 0;
-
-        size_t headerLen = 2;
-
+    bool WebsocketsEndpoint::sendHeader(uint64_t len, uint8_t opcode, bool fin, bool mask) {
         if(len < 126) {
-            header.payload = len;
+            auto header = MakeHeader<Header>(len, opcode, fin, mask);
+            
+            // send the 2 bytes long header
+            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2 + 0);
         } else if(len < 65536) {
-            header.payload = 126;
+            auto header = MakeHeader<HeaderWithExtended16>(len, opcode, fin, mask);
             header.extendedPayload = (len << 8) | (len >> 8);
-            headerLen = 4; // with 2 bytes of extra length
+
+            // send the 4 bytes long header
+            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2 + 2);
         } else {
-            // TODO properly handle very long message
-            // ?? header.extraExtenedePayload;
-            header.payload = 127;
+            auto header = MakeHeader<HeaderWithExtended64>(len, opcode, fin, mask);
+            // header.extendedPayload = swapEndianess(len);
+            header.extendedPayload = swapEndianess(len);
+
+            // send the 10 bytes long header
+            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2);
+            this->_client->send(reinterpret_cast<uint8_t*>(&header.extendedPayload), 8);
         }
+
+        return this->_client->available();
+    }
+
+    bool WebsocketsEndpoint::send(const char* data, size_t len, uint8_t opcode, bool fin, bool mask, uint8_t maskingKey[4]) {
+
+#ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
+        if(len > _WS_CONFIG_MAX_MESSAGE_SIZE) {
+            return false;
+        }
+#endif
         
-        // send header
-        this->_client.send(reinterpret_cast<uint8_t*>(&header), headerLen);
+        // send the header
+        sendHeader(len, opcode, fin, mask);
 
         // if masking is set, send the masking key
         if(mask) {
-            this->_client.send(reinterpret_cast<uint8_t*>(maskingKey), 4);
+            this->_client->send(reinterpret_cast<uint8_t*>(maskingKey), 4);
         }
 
         if(len > 0) {
-            this->_client.send(reinterpret_cast<uint8_t*>(const_cast<char*>(data)), len);
+            this->_client->send(reinterpret_cast<uint8_t*>(const_cast<char*>(data)), len);
         }
         return true; // TODO dont assume success
     }
 
-    void WebsocketsEndpoint::close() {
-        if(this->_client.available()) {
+    void WebsocketsEndpoint::close(CloseReason reason) {
+        if(!this->_client->available()) return;
+
+        this->_closeReason = reason;
+        if(reason == CloseReason_None) {
             send(nullptr, 0, internals::ContentType::Close);
-            this->_client.close();
+        } else {
+            uint16_t reasonNum = static_cast<uint16_t>(reason);
+            reasonNum = (reasonNum >> 8) | (reasonNum << 8);
+            send(reinterpret_cast<const char*>(&reasonNum), 2, internals::ContentType::Close);
         }
+        this->_client->close();
+    }
+
+    CloseReason WebsocketsEndpoint::getCloseReason() {
+        return _closeReason;
     }
 
     bool WebsocketsEndpoint::pong(WSString msg) {
