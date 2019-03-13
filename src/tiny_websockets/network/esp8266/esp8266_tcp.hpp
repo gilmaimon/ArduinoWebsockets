@@ -28,10 +28,12 @@ namespace websockets { namespace network {
 
     void send(WSString data) override {
       client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
+      client.flush();
     }
 
     void send(uint8_t* data, uint32_t len) override {
       client.write(data, len);
+      client.flush();
     }
     
     WSString readLine() override {
