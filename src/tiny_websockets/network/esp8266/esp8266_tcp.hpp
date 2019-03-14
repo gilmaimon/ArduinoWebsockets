@@ -12,14 +12,14 @@ namespace websockets { namespace network {
   class Esp8266TcpClient : public TcpClient {
   public:
     Esp8266TcpClient(WiFiClient c) : client(c) {
-      client.setSync(true);
+      client.setNoDelay(true);
     }
     
     Esp8266TcpClient() {}
 
     bool connect(WSString host, int port) {
       auto didConnect = client.connect(host.c_str(), port);
-      client.setSync(true);
+      client.setNoDelay(true);
       return didConnect;
     }
 

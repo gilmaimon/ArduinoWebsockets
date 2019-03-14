@@ -13,10 +13,14 @@ namespace websockets { namespace network {
   class Esp32TcpClient : public TcpClient {
   public:
     Esp32TcpClient() {}
-    Esp32TcpClient(WiFiClient c) : client(c) {}
+    Esp32TcpClient(WiFiClient c) : client(c) {
+      client.setNoDelay(true);
+    }
 
     bool connect(WSString host, int port) {
-      return client.connect(host.c_str(), port);
+      auto didConnect = client.connect(host.c_str(), port);
+      client.setNoDelay(true);
+      return didConnect;
     }
 
     bool poll() {
