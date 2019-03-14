@@ -10,7 +10,7 @@ The library provides simple and easy interface for websockets work (Client and S
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.3.1) the library only works with `ESP8266` and `ESP32`.
+Currently (version 0.3.4) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
@@ -189,3 +189,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **08/03/2019 (v0.3.1)** - Small patch. Merged changes from TinyWebsockets - interface changes to callbacks (partial callbacks without WebsocketsClient& as first parameter).
 - **12/03/2019 (v0.3.2)** - Fixed a bug with behaviour of WebsokcetsClient (copy c'tor and assignment operator). Added close codes from TinyWebsockets. Thank you [@ramdor](https://github.com/gilmaimon/ArduinoWebsockets/issues/2)
 - **13/03/2019 (v0.3.3)** - Fixed a bug in the esp8266 networking impl. Thank you [@ramdor](https://github.com/gilmaimon/ArduinoWebsockets/issues/2)
+- **14/03/2019 (v0.3.4)** - changed underling tcp impl for esp8266 and esp32 to use `setNoDelay(true)` instead of sync communication. This makes communication faster and more relaiable than default. Thank you @ramdor for pointing out these methods.
