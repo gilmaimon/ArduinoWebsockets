@@ -16,20 +16,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <iostream>
+
 namespace websockets { namespace network {
     class WinTcpClient : public TcpClient {
     public:
-        WinTcpClient(SOCKET s = INVALID_SOCKET);
-        bool connect(WSString host, int port) override;
+        WinTcpClient(const SOCKET s = INVALID_SOCKET);
+        bool connect(const WSString& host, const int port) override;
         bool poll() override;
         bool available() override;
-        void send(WSString data) override;
-        void send(uint8_t* data, uint32_t len) override;
+        void send(const WSString& data) override;
+        void send(const WSString&& data) override;
+        void send(const uint8_t* data, const uint32_t len) override;
         WSString readLine() override;
-        void read(uint8_t* buffer, uint32_t len) override;
+        void read(uint8_t* buffer, const uint32_t len) override;
         void close() override;
         virtual ~WinTcpClient();
 
+    protected:
+        int getSocket() const override;
+    
     private:
         SOCKET socket;
     };

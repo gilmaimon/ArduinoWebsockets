@@ -6,11 +6,12 @@
 namespace websockets { namespace network {
   struct TcpClient : public TcpSocket {
     virtual bool poll() = 0;
-        virtual void send(WSString data) = 0;
-        virtual void send(uint8_t* data, uint32_t len) = 0;
-        virtual WSString readLine() = 0;
-        virtual void read(uint8_t* buffer, uint32_t len) = 0;
-    virtual bool connect(WSString host, int port) = 0;
+    virtual void send(const WSString& data) = 0;
+    virtual void send(const WSString&& data) = 0;
+    virtual void send(const uint8_t* data, const uint32_t len) = 0;
+    virtual WSString readLine() = 0;
+    virtual void read(uint8_t* buffer, const uint32_t len) = 0;
+    virtual bool connect(const WSString& host, int port) = 0;
     virtual ~TcpClient() {}
   };
 }} // websockets::network

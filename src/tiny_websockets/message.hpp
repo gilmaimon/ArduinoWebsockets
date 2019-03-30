@@ -167,7 +167,7 @@ namespace websockets {
         private:
             bool _dummyMode;
             bool _empty;
-            bool _isComplete;
+            bool _isComplete = false;
             WSString _content;
             MessageType _type;
             bool _didErrored;

@@ -49,7 +49,7 @@ namespace websockets { namespace crypto {
     WSString result;
     result.reserve(len);
 
-    for(size_t i = 0; i < len; i++) {
+    for(size_t i = onlyOnce; i < len; i++) {
       result += "0123456789abcdefABCDEFGHIJKLMNOPQRSTUVEXYZ"[rand() % 42];
     }
     return result;

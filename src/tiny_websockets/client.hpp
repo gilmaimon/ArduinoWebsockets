@@ -5,6 +5,7 @@
 #include <tiny_websockets/internals/data_frame.hpp>
 #include <tiny_websockets/internals/websockets_endpoint.hpp>
 #include <tiny_websockets/message.hpp>
+#include <memory>
 #include <functional>
 
 namespace websockets {
@@ -21,9 +22,10 @@ namespace websockets {
     typedef std::function<void(WebsocketsClient&, WebsocketsEvent, WSInterfaceString)> EventCallback;
     typedef std::function<void(WebsocketsEvent, WSInterfaceString)> PartialEventCallback;
 
-  class WebsocketsClient : private internals::WebsocketsEndpoint {
+  class WebsocketsClient {
   public:
-    WebsocketsClient(network::TcpClient* client = new WSDefaultTcpClient);
+    WebsocketsClient();
+    WebsocketsClient(std::shared_ptr<network::TcpClient> client);
     
     WebsocketsClient(const WebsocketsClient& other);
     WebsocketsClient(const WebsocketsClient&& other);
@@ -31,44 +33,47 @@ namespace websockets {
     WebsocketsClient& operator=(const WebsocketsClient& other);
     WebsocketsClient& operator=(const WebsocketsClient&& other);
 
-    bool connect(WSInterfaceString url);
-    bool connect(WSInterfaceString host, int port, WSInterfaceString path);
+    bool connect(const WSInterfaceString url);
+    bool connect(const WSInterfaceString host, const int port, const WSInterfaceString path);
     
-    void onMessage(MessageCallback callback);
-    void onMessage(PartialMessageCallback callback);
+    void onMessage(const MessageCallback callback);
+    void onMessage(const PartialMessageCallback callback);
 
-    void onEvent(EventCallback callback);
-    void onEvent(PartialEventCallback callback);
+    void onEvent(const EventCallback callback);
+    void onEvent(const PartialEventCallback callback);
 
     bool poll();
-    bool available(bool activeTest = false);
+    bool available(const bool activeTest = false);
 
-    bool send(WSInterfaceString data);
-    bool send(const char* data, size_t len);
+    bool send(const WSInterfaceString&& data);
+    bool send(const WSInterfaceString& data);
+    bool send(const char* data);
+    bool send(const char* data, const size_t len);
 
-    bool sendBinary(WSInterfaceString data);
-    bool sendBinary(const char* data, size_t len);
+    bool sendBinary(const WSInterfaceString data);
+    bool sendBinary(const char* data, const size_t len);
 
     // stream messages
-    bool stream(WSInterfaceString data = "");
-    bool streamBinary(WSInterfaceString data = "");
-    bool end(WSInterfaceString data = "");
+    bool stream(const WSInterfaceString data = "");
+    bool streamBinary(const WSInterfaceString data = "");
+    bool end(const WSInterfaceString data = "");
     
-    void setFragmentsPolicy(FragmentsPolicy newPolicy);
-    FragmentsPolicy getFragmentsPolicy();
+    void setFragmentsPolicy(const FragmentsPolicy newPolicy);
+    FragmentsPolicy getFragmentsPolicy() const;
     
     WebsocketsMessage readBlocking();
 
-    bool ping(WSInterfaceString data = "");
-    bool pong(WSInterfaceString data = "");
+    bool ping(const WSInterfaceString data = "");
+    bool pong(const WSInterfaceString data = "");
 
-    void close(CloseReason reason = CloseReason_NormalClosure);
-    CloseReason getCloseReason();
+    void close(const CloseReason reason = CloseReason_NormalClosure);
+    CloseReason getCloseReason() const;
 
     virtual ~WebsocketsClient();
 
   private:
-    network::TcpClient* _client;
+    std::shared_ptr<network::TcpClient> _client;
+    internals::WebsocketsEndpoint _endpoint;
     bool _connectionOpen;
     MessageCallback _messagesCallback;
     EventCallback _eventsCallback;
@@ -80,5 +85,7 @@ namespace websockets {
     void _handlePing(WebsocketsMessage);
     void _handlePong(WebsocketsMessage);
     void _handleClose(WebsocketsMessage);
+
+    void upgradeToSecuredConnection();
   };
 }

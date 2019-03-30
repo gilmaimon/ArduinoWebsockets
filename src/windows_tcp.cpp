@@ -75,7 +75,7 @@ namespace websockets { namespace network {
   }
 
   // Returns true if an error occured
-  bool windowsTcpSend(uint8_t* buffer, uint32_t len, SOCKET socket) {
+  bool windowsTcpSend(const uint8_t* buffer, const uint32_t len, const SOCKET socket) {
     // Send an initial buffer
     const char* cBuffer = reinterpret_cast<const char*>(buffer);
 
@@ -108,7 +108,7 @@ namespace websockets { namespace network {
     // Empty
   }
 
-  bool WinTcpClient::connect(WSString host, int port) {
+  bool WinTcpClient::connect(const WSString& host, const int port) {
     this->socket = windowsTcpConnect(host, port);
     return available();
   }
@@ -127,11 +127,15 @@ namespace websockets { namespace network {
     return socket != INVALID_SOCKET;
   }
 
-  void WinTcpClient::send(WSString data) {
+  void WinTcpClient::send(const WSString& data) {
     this->send(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
   }
 
-  void WinTcpClient::send(uint8_t* data, uint32_t len) {
+  void WinTcpClient::send(const WSString&& data) {
+    this->send(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
+  }
+
+  void WinTcpClient::send(const uint8_t* data, const uint32_t len) {
     auto error = windowsTcpSend(data, len, this->socket);
     if(error) close();
   }
@@ -148,7 +152,7 @@ namespace websockets { namespace network {
     if(error) close();
     return line;
   }
-  void WinTcpClient::read(uint8_t* buffer, uint32_t len) {
+  void WinTcpClient::read(uint8_t* buffer, const uint32_t len) {
     auto error = windowsTcpRecive(buffer, len, this->socket);
     if(error) close();
   }
@@ -162,6 +166,10 @@ namespace websockets { namespace network {
       // TODO WSA cleanup shouldnt be called multiple times?
       //WSACleanup();
     }
+  }
+  
+  int WinTcpClient::getSocket() const { 
+    return socket; 
   }
 
   WinTcpClient::~WinTcpClient() {
@@ -285,6 +293,9 @@ namespace websockets { namespace network {
     // WSACleanup();
   }
 
+  int WinTcpServer::getSocket() const{ 
+    return socket; 
+  }
 
   WinTcpServer::~WinTcpServer() {
     this->close();

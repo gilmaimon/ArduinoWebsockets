@@ -41,8 +41,6 @@ namespace websockets {
 namespace internals {
 
     uint32_t swapEndianess(uint32_t num) {
-        uint32_t result = 0;
-
         uint32_t highest = (num >> 24);
         uint32_t second = (num << 8) >> 24;
         uint32_t third = (num << 16) >> 24;
@@ -52,8 +50,6 @@ namespace internals {
     }
 
     uint64_t swapEndianess(uint64_t num) {
-        uint64_t result = 0;
-
         uint32_t upper = (num >> 32);
         uint32_t lower = (num << 32) >> 32;
     
@@ -66,7 +62,7 @@ namespace internals {
         return upperLong | (lowerLong << 32);
     }
 
-    WebsocketsEndpoint::WebsocketsEndpoint(network::TcpClient* client, FragmentsPolicy fragmentsPolicy) : 
+    WebsocketsEndpoint::WebsocketsEndpoint(std::shared_ptr<network::TcpClient> client, FragmentsPolicy fragmentsPolicy) : 
         _client(client),
         _fragmentsPolicy(fragmentsPolicy),
         _recvMode(RecvMode_Normal),
@@ -139,11 +135,9 @@ namespace internals {
             extendedPayload = tmp;
         }
         else if (header.payload == 127) {
-            // TODO: read next 64 bits as payload length and handle such very long messages
             uint64_t tmp = 0;
             socket.read(reinterpret_cast<uint8_t*>(&tmp), 8);
             extendedPayload = swapEndianess(tmp);
-            //extendedPayload = swapEndianess(tmp);
         }
 
         return extendedPayload;
@@ -316,7 +310,7 @@ namespace internals {
         }
     }
 
-    bool WebsocketsEndpoint::send(WSString data, uint8_t opcode, bool fin, bool mask, uint8_t maskingKey[4]) { 
+    bool WebsocketsEndpoint::send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const uint8_t maskingKey[4]) { 
         return send(data.c_str(), data.size(), opcode, fin, mask, maskingKey);
     }
 
@@ -345,7 +339,7 @@ namespace internals {
         return this->_client->available();
     }
 
-    bool WebsocketsEndpoint::send(const char* data, size_t len, uint8_t opcode, bool fin, bool mask, uint8_t maskingKey[4]) {
+    bool WebsocketsEndpoint::send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const uint8_t maskingKey[4]) {
 
 #ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
         if(len > _WS_CONFIG_MAX_MESSAGE_SIZE) {
@@ -358,7 +352,7 @@ namespace internals {
 
         // if masking is set, send the masking key
         if(mask) {
-            this->_client->send(reinterpret_cast<uint8_t*>(maskingKey), 4);
+            this->_client->send(reinterpret_cast<const uint8_t*>(maskingKey), 4);
         }
 
         if(len > 0) {
@@ -381,21 +375,20 @@ namespace internals {
         this->_client->close();
     }
 
-    CloseReason WebsocketsEndpoint::getCloseReason() {
+    CloseReason WebsocketsEndpoint::getCloseReason() const {
         return _closeReason;
     }
 
-    bool WebsocketsEndpoint::pong(WSString msg) {
-        // Pong data must be shorter than 125 bytes
-        if(msg.size() > 125)  {
+    bool WebsocketsEndpoint::ping(const WSString& msg) {
+        // Ping data must be shorter than 125 bytes
+        if(msg.size() > 125) {
             return false;
         }
         else {
-            return send(msg, ContentType::Pong);
+            return send(msg, ContentType::Ping);
         }
     }
-
-    bool WebsocketsEndpoint::ping(WSString msg) {
+    bool WebsocketsEndpoint::ping(const WSString&& msg) {
         // Ping data must be shorter than 125 bytes
         if(msg.size() > 125) {
             return false;
@@ -405,11 +398,30 @@ namespace internals {
         }
     }
 
+    bool WebsocketsEndpoint::pong(const WSString& msg) {
+        // Pong data must be shorter than 125 bytes
+        if(msg.size() > 125)  {
+            return false;
+        }
+        else {
+            return this->send(msg, ContentType::Pong);
+        }
+    }
+    bool WebsocketsEndpoint::pong(const WSString&& msg) {
+        // Pong data must be shorter than 125 bytes
+        if(msg.size() > 125)  {
+            return false;
+        }
+        else {
+            return this->send(msg, ContentType::Pong);
+        }
+    }
+
     void WebsocketsEndpoint::setFragmentsPolicy(FragmentsPolicy newPolicy) {
         this->_fragmentsPolicy = newPolicy;
     }
 
-    FragmentsPolicy WebsocketsEndpoint::getFragmentsPolicy() {
+    FragmentsPolicy WebsocketsEndpoint::getFragmentsPolicy() const {
         return this->_fragmentsPolicy;
     }
 

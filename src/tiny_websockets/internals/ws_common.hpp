@@ -4,15 +4,21 @@
 #include <string>
 #include <Arduino.h>
 
+// Versioning
+#define TINY_WS_VERSION_STRING "0.1.0"
+#define TINY_WS_VERSION_MAJOR 0
+#define TINY_WS_VERSION_MINOR 1
+#define TINY_WS_VERSION_PATCH 0
+
 namespace websockets {
     typedef std::string WSString;
     typedef String WSInterfaceString;
 
     namespace internals {
-        WSString fromInterfaceString(WSInterfaceString& str);
-        WSString fromInterfaceString(WSInterfaceString&& str);
-        WSInterfaceString fromInternalString(WSString& str);
-        WSInterfaceString fromInternalString(WSString&& str);
+        WSString fromInterfaceString(const WSInterfaceString& str);
+        WSString fromInterfaceString(const WSInterfaceString&& str);
+        WSInterfaceString fromInternalString(const WSString& str);
+        WSInterfaceString fromInternalString(const WSString&& str);
     }
 }
 
@@ -21,11 +27,25 @@ namespace websockets {
     #include <tiny_websockets/network/windows/win_tcp_server.hpp>
     #define WSDefaultTcpClient websockets::network::WinTcpClient
     #define WSDefaultTcpServer websockets::network::WinTcpServer
+
+    #ifndef _WS_CONFIG_NO_SSL
+        // OpenSSL Dependent
+        #include <tiny_websockets/network/openssl_secure_tcp_client.hpp>
+        #define WSDefaultSecuredTcpClient websockets::network::OpenSSLSecureTcpClient<WSDefaultTcpClient>
+    #endif //_WS_CONFIG_NO_SSL
+
 #elif defined(__linux__)
     #include <tiny_websockets/network/linux/linux_tcp_client.hpp>
     #include <tiny_websockets/network/linux/linux_tcp_server.hpp>
     #define WSDefaultTcpClient websockets::network::LinuxTcpClient
     #define WSDefaultTcpServer websockets::network::LinuxTcpServer
+
+    #ifndef _WS_CONFIG_NO_SSL
+        // OpenSSL Dependent
+        #include <tiny_websockets/network/openssl_secure_tcp_client.hpp>
+        #define WSDefaultSecuredTcpClient websockets::network::OpenSSLSecureTcpClient<WSDefaultTcpClient>
+    #endif //_WS_CONFIG_NO_SSL
+
 #elif defined(ESP8266)
 
     #define PLATFORM_DOES_NOT_SUPPORT_BLOCKING_READ

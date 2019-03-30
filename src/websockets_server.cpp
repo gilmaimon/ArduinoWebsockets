@@ -1,5 +1,6 @@
 #include <tiny_websockets/server.hpp>
 #include <tiny_websockets/internals/wscrypto/crypto.hpp>
+#include <memory>
 #include <map>
 
 namespace websockets {
@@ -58,7 +59,7 @@ namespace websockets {
     }
 
     WebsocketsClient WebsocketsServer::accept() {
-        auto tcpClient = _server->accept();
+        std::shared_ptr<network::TcpClient> tcpClient(_server->accept());
         if(tcpClient->available() == false) return {};
         
         auto params = recvHandshakeRequest(*tcpClient);

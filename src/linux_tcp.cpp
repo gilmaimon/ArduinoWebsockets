@@ -52,7 +52,7 @@ namespace websockets { namespace network {
     return close( _socket );
   }
 
-  bool linuxTcpSend(int _socket, uint8_t* data, size_t len) {
+  bool linuxTcpSend(const int _socket, const uint8_t* data, const size_t len) {
     auto res = send(_socket, data, len, MSG_NOSIGNAL );
     if(res < 0) {
       return false;
@@ -65,11 +65,11 @@ namespace websockets { namespace network {
     return read(_socket, buffer, len) > 0;
   }
 
-  LinuxTcpClient::LinuxTcpClient(int socket) : _socket(socket) {
+  LinuxTcpClient::LinuxTcpClient(const int socket) : _socket(socket) {
     // Empty
   }
 
-  bool LinuxTcpClient::connect(WSString host, int port) {
+  bool LinuxTcpClient::connect(const WSString& host, const int port) {
     this->_socket = linuxTcpConnect(host, port);
     return available();
   }
@@ -82,13 +82,20 @@ namespace websockets { namespace network {
   bool LinuxTcpClient::available() {
     return this->_socket != INVALID_SOCKET;
   }
-  void LinuxTcpClient::send(WSString data) {
+  void LinuxTcpClient::send(const WSString& data) {
     return this->send(
-      reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())),
+      reinterpret_cast<const uint8_t*>(data.c_str()),
       data.size()
     );
   }
-  void LinuxTcpClient::send(uint8_t* data, uint32_t len) {
+  void LinuxTcpClient::send(const WSString&& data) {
+    return this->send(
+      reinterpret_cast<const uint8_t*>(data.c_str()),
+      data.size()
+    );
+  }
+
+  void LinuxTcpClient::send(const uint8_t* data, const uint32_t len) {
     if(!available()) return;// false;
 
     auto success = linuxTcpSend(
@@ -100,7 +107,7 @@ namespace websockets { namespace network {
     if(!success) close();
     // return success;
   }
-  
+
   WSString LinuxTcpClient::readLine() {
     uint8_t byte = '0';
     WSString line;
@@ -114,7 +121,7 @@ namespace websockets { namespace network {
     return line;
   }
   
-  void LinuxTcpClient::read(uint8_t* buffer, uint32_t len) {
+  void LinuxTcpClient::read(uint8_t* buffer, const uint32_t len) {
     auto success = linuxTcpRead(this->_socket, buffer, len);
     if(!success) close();
   }
@@ -133,8 +140,7 @@ namespace websockets { namespace network {
 namespace websockets { namespace network {
 
   int linuxTcpServerInit(const size_t backlog, int port) {
-    socklen_t clilen;
-    struct sockaddr_in serv_addr, cli_addr;
+    struct sockaddr_in serv_addr;
     
     // socket init
     auto sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -157,7 +163,7 @@ namespace websockets { namespace network {
     return sockfd;
   }
 
-  bool LinuxTcpServer::listen(uint16_t port) {
+  bool LinuxTcpServer::listen(const uint16_t port) {
     this->_socket = linuxTcpServerInit(this->_num_backlog, port);
     return this->available();
   }

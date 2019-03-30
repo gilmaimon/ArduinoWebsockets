@@ -20,11 +20,15 @@ namespace websockets { namespace network {
     class WinTcpServer : public TcpServer {
     public:
         bool listen(uint16_t port) override;
-    TcpClient* accept() override;
+        TcpClient* accept() override;
         bool available() override;
         bool poll() override;
         void close() override;
         virtual ~WinTcpServer();
+
+    protected:
+        int getSocket() const override;
+
     private:
         SOCKET socket;
     };
