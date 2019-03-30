@@ -1,4 +1,7 @@
-#Compiled Arduino files
+# VSCode Junk
+.vscode/
+
+# Compiled Arduino files
 *.elf
 *.hex
 *.bin
