@@ -17,7 +17,7 @@ namespace websockets { namespace network {
     
     Esp8266TcpClient() {}
 
-    bool connect(WSString host, int port) {
+    bool connect(const WSString& host, const int port) {
       auto didConnect = client.connect(host.c_str(), port);
       client.setNoDelay(true);
       return didConnect;
@@ -31,11 +31,15 @@ namespace websockets { namespace network {
       return client.connected();
     }
 
-    void send(WSString data) override {
+    void send(const WSString& data) override {
       client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
     }
 
-    void send(uint8_t* data, uint32_t len) override {
+    void send(const WSString&& data) override {
+      client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
+    }
+
+    void send(const uint8_t* data, const uint32_t len) override {
       client.write(data, len);
     }
     
@@ -51,7 +55,7 @@ namespace websockets { namespace network {
       return line;
     }
 
-    void read(uint8_t* buffer, uint32_t len) override {
+    void read(uint8_t* buffer, const uint32_t len) override {
       client.read(buffer, len);
     }
 
@@ -62,6 +66,12 @@ namespace websockets { namespace network {
     virtual ~Esp8266TcpClient() {
       client.stop();
     }
+
+  protected:
+    int getSocket() const override {
+      return -1;
+    }
+    
   private:
     WiFiClient client;
   };
@@ -75,7 +85,7 @@ namespace websockets { namespace network {
       return server.hasClient();
     }
 
-    bool listen(uint16_t port) override {
+    bool listen(const uint16_t port) override {
       server.begin(port);
       return available();
     }
@@ -99,6 +109,12 @@ namespace websockets { namespace network {
     virtual ~Esp8266TcpServer() {
       if(available()) close();
     }
+  
+  protected:
+    int getSocket() const override {
+      return -1;
+    }
+
   private:
     WiFiServer server;
   };
