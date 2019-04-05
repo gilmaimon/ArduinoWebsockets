@@ -17,13 +17,13 @@ namespace websockets { namespace network {
       client.setNoDelay(true);
     }
 
-    bool connect(WSString host, int port) {
+    bool connect(const WSString& host, int port) {
       auto didConnect = client.connect(host.c_str(), port);
       client.setNoDelay(true);
       return didConnect;
     }
 
-    bool poll() {
+    bool poll() override {
       return client.available();
     }
 
@@ -31,11 +31,14 @@ namespace websockets { namespace network {
       return static_cast<bool>(client);
     }
 
-    void send(WSString data) override {
-      client.write(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.size());
+    void send(const WSString& data) override {
+      client.write(reinterpret_cast<const uint8_t*>(data.c_str()), data.size());
+    }
+    void send(const WSString&& data) override {
+      client.write(reinterpret_cast<const uint8_t*>(data.c_str()), data.size());
     }
 
-    void send(uint8_t* data, uint32_t len) override {
+    void send(const uint8_t* data, const uint32_t len) override {
       client.write(data, len);
     }
     
@@ -51,7 +54,7 @@ namespace websockets { namespace network {
       return line;
     }
 
-    void read(uint8_t* buffer, uint32_t len) override {
+    void read(uint8_t* buffer, const uint32_t len) override {
       client.read(buffer, len);
     }
 
@@ -62,6 +65,12 @@ namespace websockets { namespace network {
     virtual ~Esp32TcpClient() {
       close();
     }
+  
+  protected:
+    int getSocket() const override {
+      return client.fd();
+    }
+  
   private:
     WiFiClient client;
   };
@@ -73,7 +82,7 @@ namespace websockets { namespace network {
       return server.hasClient();
     }
 
-    bool listen(uint16_t port) override {
+    bool listen(const uint16_t port) override {
       server = WiFiServer(port);
       server.begin(port);
       return available();
@@ -100,6 +109,12 @@ namespace websockets { namespace network {
     virtual ~Esp32TcpServer() {
       if(available()) close();
     }
+
+  protected:
+    int getSocket() const override {
+      return -1; // Not Implemented
+    }
+  
   private:
     WiFiServer server;
   };
