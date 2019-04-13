@@ -131,6 +131,10 @@ namespace websockets { namespace network {
       client.stop();
     }
 
+    void setInsecure() {
+      client.setInsecure();
+    }
+
     void setFingerprint(const char* fingerprint) {
       client.setFingerprint(fingerprint);
     }

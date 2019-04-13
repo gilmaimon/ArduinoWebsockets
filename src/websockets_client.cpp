@@ -155,7 +155,16 @@ namespace websockets {
 
     void WebsocketsClient::upgradeToSecuredConnection() {
     #ifndef _WS_CONFIG_NO_SSL
-        this->_client = std::make_shared<WSDefaultSecuredTcpClient>();
+        auto client = new WSDefaultSecuredTcpClient;
+        
+        if(this->_optional_ssl_fingerprint) {
+            client->setFingerprint(this->_optional_ssl_fingerprint);
+        }
+        else {
+            client->setInsecure();
+        }
+
+        this->_client = std::shared_ptr<WSDefaultSecuredTcpClient>(client);
         this->_endpoint = {this->_client};
     #endif //_WS_CONFIG_NO_SSL
     }
@@ -466,6 +475,14 @@ namespace websockets {
 
     void WebsocketsClient::_handleClose(const WebsocketsMessage message) {
         this->_eventsCallback(*this, WebsocketsEvent::ConnectionClosed, message.data());
+    }
+
+    void WebsocketsClient::setFingerprint(const char* fingerprint) {
+        this->_optional_ssl_fingerprint = fingerprint;
+    }
+
+    void WebsocketsClient::setInsecure() {
+        this->_optional_ssl_fingerprint = nullptr;
     }
 
     WebsocketsClient::~WebsocketsClient() {

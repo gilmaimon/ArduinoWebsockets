@@ -69,6 +69,9 @@ namespace websockets {
     void close(const CloseReason reason = CloseReason_NormalClosure);
     CloseReason getCloseReason() const;
 
+    void setFingerprint(const char* fingerprint);
+    void setInsecure();
+
     virtual ~WebsocketsClient();
 
   private:
@@ -81,6 +84,8 @@ namespace websockets {
       SendMode_Normal,
       SendMode_Streaming
     } _sendMode;
+
+    const char* _optional_ssl_fingerprint = nullptr;
 
     void _handlePing(WebsocketsMessage);
     void _handlePong(WebsocketsMessage);
