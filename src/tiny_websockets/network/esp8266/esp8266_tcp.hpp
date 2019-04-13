@@ -80,11 +80,9 @@ namespace websockets { namespace network {
   public:
     SecuredEsp8266TcpClient(WiFiClientSecure c) : client(c) {
       client.setNoDelay(true);
-      client.setInsecure();
     }
     
     SecuredEsp8266TcpClient() {
-      client.setInsecure();
     }
 
     bool connect(const WSString& host, const int port) {
@@ -133,6 +131,10 @@ namespace websockets { namespace network {
       client.stop();
     }
 
+    void setFingerprint(const char* fingerprint) {
+      client.setFingerprint(fingerprint);
+    }
+    
     virtual ~SecuredEsp8266TcpClient() {
       client.stop();
     }
