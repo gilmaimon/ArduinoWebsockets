@@ -24,6 +24,8 @@ script:
   - buildExampleSketchEsp32 "Esp32-Client"
   - buildExampleSketchEsp32 "Esp32-Server"
   - buildExampleSketchEsp32 "Minimal-Esp32-Client"
+  - buildExampleSketchEsp32 "Secured-Esp32-Client"
   - buildExampleSketchEsp8266 "Esp8266-Client"
   - buildExampleSketchEsp8266 "Esp8266-Server"
   - buildExampleSketchEsp8266 "Minimal-Esp8266-Client"
+  - buildExampleSketchEsp8266 "Secured-Esp8266-Client"
