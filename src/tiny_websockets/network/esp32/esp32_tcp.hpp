@@ -12,7 +12,14 @@
 
 namespace websockets { namespace network {
   typedef GenericEspTcpClient<WiFiClient> Esp32TcpClient;
-  typedef GenericSecuredEspTcpClient<WiFiClientSecure> SecuredEsp32TcpClient;
+  
+  class SecuredEsp32TcpClient : public GenericEspTcpClient<WiFiClientSecure> {
+  public:
+    void setCACert(const char* ca_cert) {
+      this->client.setCACert(ca_cert);
+    }
+  };
+
 
   class Esp32TcpServer : public TcpServer {
   public:

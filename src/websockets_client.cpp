@@ -157,12 +157,18 @@ namespace websockets {
     #ifndef _WS_CONFIG_NO_SSL
         auto client = new WSDefaultSecuredTcpClient;
         
+    #ifdef ESP8266
         if(this->_optional_ssl_fingerprint) {
             client->setFingerprint(this->_optional_ssl_fingerprint);
         }
         else {
             client->setInsecure();
         }
+    #elif defined(ESP32)
+        if(this->_optional_ssl_fingerprint) {
+            client->setCACert(this->_optional_ssl_ca_cert);
+        }
+    #endif
 
         this->_client = std::shared_ptr<WSDefaultSecuredTcpClient>(client);
         this->_endpoint = {this->_client};
@@ -477,6 +483,8 @@ namespace websockets {
         this->_eventsCallback(*this, WebsocketsEvent::ConnectionClosed, message.data());
     }
 
+
+#ifdef ESP8266
     void WebsocketsClient::setFingerprint(const char* fingerprint) {
         this->_optional_ssl_fingerprint = fingerprint;
     }
@@ -484,6 +492,11 @@ namespace websockets {
     void WebsocketsClient::setInsecure() {
         this->_optional_ssl_fingerprint = nullptr;
     }
+#elif defined(ESP32)
+    void WebsocketsClient::setCACert(const char* ca_cert) {
+        this->_optional_ssl_ca_cert = ca_cert;
+    }  
+#endif
 
     WebsocketsClient::~WebsocketsClient() {
         if(available()) {

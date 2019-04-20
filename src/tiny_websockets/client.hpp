@@ -69,8 +69,12 @@ namespace websockets {
     void close(const CloseReason reason = CloseReason_NormalClosure);
     CloseReason getCloseReason() const;
 
+  #ifdef ESP8266
     void setFingerprint(const char* fingerprint);
     void setInsecure();
+  #elif defined(ESP32)
+    void setCACert(const char* ca_cert);
+  #endif
 
     virtual ~WebsocketsClient();
 
@@ -85,7 +89,12 @@ namespace websockets {
       SendMode_Streaming
     } _sendMode;
 
+
+  #ifdef ESP8266
     const char* _optional_ssl_fingerprint = nullptr;
+  #elif defined(ESP32)
+    const char* _optional_ssl_ca_cert = nullptr;
+  #endif
 
     void _handlePing(WebsocketsMessage);
     void _handlePong(WebsocketsMessage);
