@@ -11,7 +11,7 @@
     NOTE:
     The sketch dosen't check or indicates errors while connection to 
     WiFi or to the websockets server. For full example you might want 
-    to try the example named "Esp8266-Client".
+    to try the example named "Esp8266-Client" (And use the ssl methods).
 
 	Hardware:
         For this sketch you only need an ESP8266 board.
