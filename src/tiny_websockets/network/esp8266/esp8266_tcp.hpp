@@ -11,7 +11,17 @@
 
 namespace websockets { namespace network {
   typedef GenericEspTcpClient<WiFiClient> Esp8266TcpClient;
-  typedef GenericSecuredEspTcpClient<WiFiClientSecure> SecuredEsp8266TcpClient;
+  
+  class SecuredEsp8266TcpClient : public GenericEspTcpClient<WiFiClientSecure> {
+  public:
+    void setInsecure() {
+      this->client.setInsecure();
+    }
+
+    void setFingerprint(const char* fingerprint) {
+      this->client.setFingerprint(fingerprint);
+    }
+  };
 
   #define DUMMY_PORT 0
 

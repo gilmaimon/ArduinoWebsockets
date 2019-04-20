@@ -70,17 +70,4 @@ namespace websockets { namespace network {
       return -1;
     }    
   };
-
-  template <class WifiClientImpl>
-  class GenericSecuredEspTcpClient : public GenericEspTcpClient<WifiClientImpl> {
-  public:
-    void setInsecure() {
-      this->client.setInsecure();
-    }
-
-    void setFingerprint(const char* fingerprint) {
-      this->client.setFingerprint(fingerprint);
-    }
-  };
-
 }} // websockets::network

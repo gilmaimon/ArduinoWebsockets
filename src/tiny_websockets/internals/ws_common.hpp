@@ -66,4 +66,9 @@ namespace websockets {
     #include <tiny_websockets/network/esp32/esp32_tcp.hpp>
     #define WSDefaultTcpClient websockets::network::Esp32TcpClient
     #define WSDefaultTcpServer websockets::network::Esp32TcpServer
+
+    #ifndef _WS_CONFIG_NO_SSL
+        // OpenSSL Dependent
+        #define WSDefaultSecuredTcpClient websockets::network::SecuredEsp32TcpClient
+    #endif //_WS_CONFIG_NO_SSL
 #endif

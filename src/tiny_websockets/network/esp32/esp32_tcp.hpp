@@ -5,75 +5,14 @@
 #include <tiny_websockets/internals/ws_common.hpp>
 #include <tiny_websockets/network/tcp_client.hpp>
 #include <tiny_websockets/network/tcp_server.hpp>
-#include <Arduino.h>
+#include <tiny_websockets/network/generic_esp/generic_esp_clients.hpp>
 
 #include <WiFi.h>
+#include <HTTPClient.h>
 
 namespace websockets { namespace network {
-  class Esp32TcpClient : public TcpClient {
-  public:
-    Esp32TcpClient() {}
-    Esp32TcpClient(WiFiClient c) : client(c) {
-      client.setNoDelay(true);
-    }
-
-    bool connect(const WSString& host, int port) {
-      auto didConnect = client.connect(host.c_str(), port);
-      client.setNoDelay(true);
-      return didConnect;
-    }
-
-    bool poll() override {
-      return client.available();
-    }
-
-    bool available() override {
-      return static_cast<bool>(client);
-    }
-
-    void send(const WSString& data) override {
-      client.write(reinterpret_cast<const uint8_t*>(data.c_str()), data.size());
-    }
-    void send(const WSString&& data) override {
-      client.write(reinterpret_cast<const uint8_t*>(data.c_str()), data.size());
-    }
-
-    void send(const uint8_t* data, const uint32_t len) override {
-      client.write(data, len);
-    }
-    
-    WSString readLine() override {
-      int val;
-      WSString line;
-      do {
-        val = client.read();
-        if(val < 0) continue;
-        line += (char)val;
-      } while(val != '\n');
-      if(!available()) close();
-      return line;
-    }
-
-    void read(uint8_t* buffer, const uint32_t len) override {
-      client.read(buffer, len);
-    }
-
-    void close() override {
-      client.stop();
-    }
-
-    virtual ~Esp32TcpClient() {
-      close();
-    }
-  
-  protected:
-    int getSocket() const override {
-      return client.fd();
-    }
-  
-  private:
-    WiFiClient client;
-  };
+  typedef GenericEspTcpClient<WiFiClient> Esp32TcpClient;
+  typedef GenericSecuredEspTcpClient<WiFiClientSecure> SecuredEsp32TcpClient;
 
   class Esp32TcpServer : public TcpServer {
   public:
