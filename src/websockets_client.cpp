@@ -165,7 +165,7 @@ namespace websockets {
             client->setInsecure();
         }
     #elif defined(ESP32)
-        if(this->_optional_ssl_fingerprint) {
+        if(this->_optional_ssl_ca_cert) {
             client->setCACert(this->_optional_ssl_ca_cert);
         }
     #endif
