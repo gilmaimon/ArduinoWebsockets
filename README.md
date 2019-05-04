@@ -24,7 +24,7 @@ Detailed instructions can be found [here](https://www.ardu-badge.com/ArduinoWebs
 Creating a client and connecting to a server:
 ```c++
 WebsocketsClient client;
-client.connect("ws://yourserverip:port/uri");
+client.connect("ws://your-server-ip:port/uri");
 ```
 
 Sending a message:
@@ -69,8 +69,7 @@ WebsocketsClient client = server.accept();
 
 const char* ssid = "ssid"; //Enter SSID
 const char* password = "password"; //Enter Password
-const char* websockets_server_host = "www.myserver.com"; //Enter server adress
-const uint16_t websockets_server_port = 8080; // Enter server port
+const char* websockets_server = "www.myserver.com:8080"; //server adress and port
 
 using namespace websockets;
 
@@ -108,7 +107,7 @@ void setup() {
     client.onEvent(onEventsCallback);
     
     // Connect to server
-    client.connect(websockets_server_host, websockets_server_port, "/");
+    client.connect(websockets_server);
 
     // Send a message
     client.send("Hi Server!");
