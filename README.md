@@ -10,7 +10,7 @@ The library provides simple and easy interface for websockets work (Client and S
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.4.0) the library only works with `ESP8266` and `ESP32`.
+Currently (version 0.4.1) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
@@ -247,4 +247,5 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **13/03/2019 (v0.3.3)** - Fixed a bug in the esp8266 networking impl. Thank you [@ramdor](https://github.com/gilmaimon/ArduinoWebsockets/issues/2)
 - **14/03/2019 (v0.3.4)** - changed underling tcp impl for esp8266 and esp32 to use `setNoDelay(true)` instead of sync communication. This makes communication faster and more relaiable than default. Thank you @ramdor for pointing out these methods.
 - **06/04/2019 (v0.3.5)** - added very basic support for WSS in esp8266 (no support for fingerprint/ca or any kind of chain validation). 
-- **22/04/2019 (v0.4.0)** - Added WSS support for both esp8266 and esp32. E328266 can use `client.setInsecure()` (does not validate certificate chain) or `client.setFingerprint(fingerprint)` in order to use WSS. With ESP32 there is `client.setCACert(certificate)` that can be used. (Usage is same as the built in `WiFiClientSecure`).  
+- **22/04/2019 (v0.4.0)** - Added WSS support for both esp8266 and esp32. E328266 can use `client.setInsecure()` (does not validate certificate chain) or `client.setFingerprint(fingerprint)` in order to use WSS. With ESP32 there is `client.setCACert(certificate)` that can be used. (Usage is same as the built in `WiFiClientSecure`).
+- **18/05/2019 (v0.4.1)** - Patch! Addressed an error with some servers. The bugs where first noted in [issue #9](https://github.com/gilmaimon/ArduinoWebsockets/issues/9). Bug was that some servers will drop connections that don't use masking, and TinyWebsockets does not use masking by default. TinyWebsockets changed that and this library merged the changes.
