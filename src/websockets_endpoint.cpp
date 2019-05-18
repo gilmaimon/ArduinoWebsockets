@@ -310,7 +310,7 @@ namespace internals {
         }
     }
 
-    bool WebsocketsEndpoint::send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const uint8_t maskingKey[4]) { 
+    bool WebsocketsEndpoint::send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey) { 
         return send(data.c_str(), data.size(), opcode, fin, mask, maskingKey);
     }
 
@@ -339,7 +339,7 @@ namespace internals {
         return this->_client->available();
     }
 
-    bool WebsocketsEndpoint::send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const uint8_t maskingKey[4]) {
+    bool WebsocketsEndpoint::send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey) {
 
 #ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
         if(len > _WS_CONFIG_MAX_MESSAGE_SIZE) {

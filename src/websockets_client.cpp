@@ -3,6 +3,7 @@
 #include <tiny_websockets/message.hpp>
 #include <tiny_websockets/client.hpp>
 #include <tiny_websockets/internals/wscrypto/crypto.hpp>
+#include <vector>
 
 namespace websockets {
     WebsocketsClient::WebsocketsClient() : WebsocketsClient(std::make_shared<WSDefaultTcpClient>()) {
@@ -110,29 +111,19 @@ namespace websockets {
         bool isSuccess;
         WSString serverAccept;
     };
-    HandshakeResponseResult parseHandshakeResponse(WSString responseHeaders) {
+    HandshakeResponseResult parseHandshakeResponse(std::vector<WSString> responseHeaders) {
         bool didUpgradeToWebsockets = false, isConnectionUpgraded = false;
         WSString serverAccept = "";
-        size_t idx = 0;
-        while(idx < responseHeaders.size()) {
-            WSString key = "", value = "";
-            // read header key
-            while(idx < responseHeaders.size() && responseHeaders[idx] != ':') key += responseHeaders[idx++];
+        for(WSString header : responseHeaders) {            
+            auto colonIndex = header.find_first_of(':');
 
-            // ignore ':' and whitespace
-            ++idx;
-            while(idx < responseHeaders.size() && isWhitespace(responseHeaders[idx])) idx++;
-
-            // read header value until \r
-            while(idx < responseHeaders.size() && responseHeaders[idx] != '\r') value += responseHeaders[idx++];
-
-            // skip \r\n
-            idx += 2;
+            WSString key = header.substr(0, colonIndex);
+            WSString value = header.substr(colonIndex + 2); // +2 (ignore space and ':')
 
             if(key == "Upgrade") {
                 didUpgradeToWebsockets = (value == "websocket");
             } else if(key == "Connection") {
-                isConnectionUpgraded = (value == "Upgrade");
+                isConnectionUpgraded = (value == "Upgrade" || value == "upgrade");
             } else if(key == "Sec-WebSocket-Accept") {
                 serverAccept = value;
             }
@@ -253,12 +244,15 @@ namespace websockets {
             return false;
         }
 
-        WSString serverResponseHeaders = "";
+        std::vector<WSString> serverResponseHeaders;
         WSString line = "";
         while (true) {
             line = this->_client->readLine();
-            serverResponseHeaders += line;
             if (line == "\r\n") break;
+            // remove /r/n from line end
+            line = line.substr(0, line.size() - 2);
+            
+            serverResponseHeaders.push_back(line);
         }
         auto parsedResponse = parseHandshakeResponse(serverResponseHeaders);
         
