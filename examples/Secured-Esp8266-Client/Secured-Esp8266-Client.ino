@@ -31,7 +31,7 @@ const char* password = "password"; //Enter Password
 const char* websockets_connection_string = "wss://echo.websocket.org/"; //Enter server adress
 
 // This fingerprint was updated 20.04.2019
-const char echo_org_ssl_fingerprint[] PROGMEM = "D5 07 4D 79 B2 D2 53 D7 74 E6 1B 46 C5 86 4E FE AD 00 F1 98";
+const char echo_org_ssl_fingerprint[] PROGMEM = "E0 E7 13 AE F4 38 0F 7F 22 39 5C 32 B3 16 EC BB 95 F3 0B 5B";
 
 using namespace websockets;
 
