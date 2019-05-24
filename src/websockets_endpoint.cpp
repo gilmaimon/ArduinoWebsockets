@@ -76,7 +76,8 @@ namespace internals {
         _fragmentsPolicy(other._fragmentsPolicy), 
         _recvMode(other._recvMode), 
         _streamBuilder(other._streamBuilder), 
-        _closeReason(other._closeReason) {
+        _closeReason(other._closeReason),
+        _useMasking(other._useMasking) {
 
         const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
     }
@@ -85,7 +86,8 @@ namespace internals {
         _fragmentsPolicy(other._fragmentsPolicy), 
         _recvMode(other._recvMode), 
         _streamBuilder(other._streamBuilder), 
-        _closeReason(other._closeReason) {
+        _closeReason(other._closeReason),
+        _useMasking(other._useMasking) {
 
         const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
     }
