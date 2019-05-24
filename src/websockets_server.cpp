@@ -80,7 +80,10 @@ namespace websockets {
         tcpClient->send("Sec-WebSocket-Accept: " + serverAccept + "\r\n");
         tcpClient->send("\r\n");
         
-        return WebsocketsClient(tcpClient);
+        WebsocketsClient wsClient(tcpClient);
+        // Don't use masking from server to client (according to RFC)
+        wsClient.setUseMasking(false);
+        return wsClient;
     }
 
     WebsocketsServer::~WebsocketsServer() {

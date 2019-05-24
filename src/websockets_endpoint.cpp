@@ -171,6 +171,12 @@ namespace internals {
         }
     }
 
+    void remaskData(char* data, uint64_t payloadLength, const char* maskingKey) {
+        for (uint64_t i = 0; i < payloadLength; i++) {
+            data[i] = data[i] ^ maskingKey[i % 4];
+        }
+    }
+
     WebsocketsFrame WebsocketsEndpoint::_recv() {
         auto header = readHeaderFromSocket(*this->_client);
         uint64_t payloadLength = readExtendedPayloadLength(*this->_client, header);
@@ -275,7 +281,6 @@ namespace internals {
         }
 
         // This is an error. a bad combination of opcodes and fin flag arrived.
-        // Close the connectiong and TODO: indicate ERROR
         close(CloseReason_ProtocolError);
         return {};
     }
@@ -308,6 +313,14 @@ namespace internals {
             }
             close(this->_closeReason);
         }
+    }
+
+    bool WebsocketsEndpoint::send(const char* data, const size_t len, const uint8_t opcode, const bool fin) {
+        return this->send(data, len, opcode, fin, this->_useMasking);
+    }
+
+    bool WebsocketsEndpoint::send(const WSString& data, const uint8_t opcode, const bool fin) {
+        return this->send(data, opcode, fin, this->_useMasking);
     }
 
     bool WebsocketsEndpoint::send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey) { 
@@ -346,17 +359,20 @@ namespace internals {
             return false;
         }
 #endif
-        
         // send the header
         sendHeader(len, opcode, fin, mask);
 
+        char* finalData = new char[len];
+        memcpy(finalData, data, len);
+
         // if masking is set, send the masking key
         if(mask) {
+            remaskData(finalData, len, maskingKey);
             this->_client->send(reinterpret_cast<const uint8_t*>(maskingKey), 4);
         }
 
         if(len > 0) {
-            this->_client->send(reinterpret_cast<uint8_t*>(const_cast<char*>(data)), len);
+            this->_client->send(reinterpret_cast<uint8_t*>(finalData), len);
         }
         return true; // TODO dont assume success
     }
@@ -366,11 +382,11 @@ namespace internals {
 
         this->_closeReason = reason;
         if(reason == CloseReason_None) {
-            send(nullptr, 0, internals::ContentType::Close);
+            send(nullptr, 0, internals::ContentType::Close, true, this->_useMasking);
         } else {
             uint16_t reasonNum = static_cast<uint16_t>(reason);
             reasonNum = (reasonNum >> 8) | (reasonNum << 8);
-            send(reinterpret_cast<const char*>(&reasonNum), 2, internals::ContentType::Close);
+            send(reinterpret_cast<const char*>(&reasonNum), 2, internals::ContentType::Close, true, this->_useMasking);
         }
         this->_client->close();
     }
@@ -385,7 +401,7 @@ namespace internals {
             return false;
         }
         else {
-            return send(msg, ContentType::Ping);
+            return send(msg, ContentType::Ping, true, this->_useMasking);
         }
     }
     bool WebsocketsEndpoint::ping(const WSString&& msg) {
@@ -394,7 +410,7 @@ namespace internals {
             return false;
         }
         else {
-            return send(msg, ContentType::Ping);
+            return send(msg, ContentType::Ping, true, this->_useMasking);
         }
     }
 
@@ -404,7 +420,7 @@ namespace internals {
             return false;
         }
         else {
-            return this->send(msg, ContentType::Pong);
+            return this->send(msg, ContentType::Pong, true, this->_useMasking);
         }
     }
     bool WebsocketsEndpoint::pong(const WSString&& msg) {
@@ -413,7 +429,7 @@ namespace internals {
             return false;
         }
         else {
-            return this->send(msg, ContentType::Pong);
+            return this->send(msg, ContentType::Pong, true, this->_useMasking);
         }
     }
 

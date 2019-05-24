@@ -42,8 +42,11 @@ namespace websockets {
 
         bool poll();
         WebsocketsMessage recv();
-        bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin = true, const bool mask = true, const char* maskingKey = "\0\0\0\0");    
-        bool send(const WSString& data, const uint8_t opcode, const bool fin = true, const bool mask = true, const char* maskingKey = "\0\0\0\0");
+        bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = "\01\20\03\40");    
+        bool send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = "\01\20\03\40");
+        
+        bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin);    
+        bool send(const WSString& data, const uint8_t opcode, const bool fin);
         
         bool ping(const WSString& msg);
         bool ping(const WSString&& msg);
@@ -57,6 +60,10 @@ namespace websockets {
         void setFragmentsPolicy(const FragmentsPolicy newPolicy);
         FragmentsPolicy getFragmentsPolicy() const;
 
+        void setUseMasking(bool useMasking) {
+            _useMasking = useMasking;
+        }
+
         virtual ~WebsocketsEndpoint();
     private:
         std::shared_ptr<network::TcpClient> _client;
@@ -67,6 +74,7 @@ namespace websockets {
         } _recvMode;
         WebsocketsMessage::StreamBuilder _streamBuilder;
         CloseReason _closeReason;
+        bool _useMasking = true;
 
         WebsocketsFrame _recv();
         void handleMessageInternally(WebsocketsMessage& msg);
