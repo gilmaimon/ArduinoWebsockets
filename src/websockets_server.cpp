@@ -64,7 +64,7 @@ namespace websockets {
         
         auto params = recvHandshakeRequest(*tcpClient);
         
-        if(params.headers["Connection"] != "Upgrade") return {}; 
+        if(params.headers["Connection"].find("Upgrade") == std::string::npos) return {};
         if(params.headers["Upgrade"] != "websocket") return {}; 
         if(params.headers["Sec-WebSocket-Version"] != "13") return {}; 
         if(params.headers["Sec-WebSocket-Key"] == "") return {};
