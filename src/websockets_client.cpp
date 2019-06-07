@@ -448,11 +448,17 @@ namespace websockets {
     }
 
     bool WebsocketsClient::ping(const WSInterfaceString data) {
-        return _endpoint.ping(internals::fromInterfaceString(data));
+        if(available()) {
+            return _endpoint.ping(internals::fromInterfaceString(data));
+        }
+        return false;
     }
 
     bool WebsocketsClient::pong(const WSInterfaceString data) {
-        return _endpoint.pong(internals::fromInterfaceString(data));
+        if(available()) {
+            return _endpoint.pong(internals::fromInterfaceString(data));
+        }
+        return false;
     }
 
     void WebsocketsClient::close(const CloseReason reason) {
