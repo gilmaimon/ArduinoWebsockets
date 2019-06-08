@@ -380,9 +380,10 @@ namespace internals {
     }
 
     void WebsocketsEndpoint::close(CloseReason reason) {
+        this->_closeReason = reason;
+        
         if(!this->_client->available()) return;
 
-        this->_closeReason = reason;
         if(reason == CloseReason_None) {
             send(nullptr, 0, internals::ContentType::Close, true, this->_useMasking);
         } else {
