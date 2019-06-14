@@ -252,3 +252,4 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 - **24/05/2019 (v0.4.2)** - Patch! Adressed masking issues - server to client messages would get masked but RFC forbbids it. (changes merged from TinyWebsockets)
 - **07/06/2019 (v0.4.3)** - Patch! Fixed a bug on some clients (mainly FireFox websokcets impl). Thank you @xgarb ([related issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/11))
 - **09/06/2019 (v0.4.4)** - Patch! Fixed an issue with `close` event callback not called in some cases (sudden disconnect, for example). Thank you @adelin-mcbsoft for pointing out the issue ([related issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/14))
+- **14/06/2019 (v0.4.5)** - Patch! Fixed a memory leak and an unnecessary use of heap memory in case of masking messages. This was discoverd thanks to [issue #16](https://github.com/gilmaimon/ArduinoWebsockets/issues/16). Thank you [xgarb](https://github.com/xgarb)!
