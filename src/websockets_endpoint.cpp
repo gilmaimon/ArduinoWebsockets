@@ -364,17 +364,27 @@ namespace internals {
         // send the header
         sendHeader(len, opcode, fin, mask);
 
-        char* finalData = new char[len];
-        memcpy(finalData, data, len);
+        char* finalData = const_cast<char*>(data);
+        bool shouldFreeBuffer = false;
 
-        // if masking is set, send the masking key
         if(mask) {
-            remaskData(finalData, len, maskingKey);
+            if(memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
+                finalData = new char[len];
+                shouldFreeBuffer = true;
+
+                memcpy(finalData, data, len);
+                remaskData(finalData, len, maskingKey);
+            }
+            
             this->_client->send(reinterpret_cast<const uint8_t*>(maskingKey), 4);
         }
 
         if(len > 0) {
             this->_client->send(reinterpret_cast<uint8_t*>(finalData), len);
+        }
+
+        if(shouldFreeBuffer) {
+            delete[] finalData;
         }
         return true; // TODO dont assume success
     }

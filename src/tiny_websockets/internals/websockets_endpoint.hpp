@@ -6,7 +6,9 @@
 #include <tiny_websockets/message.hpp>
 #include <memory>
 
-namespace websockets { 
+#define __TINY_WS_INTERNAL_DEFAULT_MASK "\00\00\00\00"
+
+namespace websockets {     
     enum FragmentsPolicy {
         FragmentsPolicy_Aggregate,
         FragmentsPolicy_Notify
@@ -42,8 +44,8 @@ namespace websockets {
 
         bool poll();
         WebsocketsMessage recv();
-        bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = "\01\20\03\40");    
-        bool send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = "\01\20\03\40");
+        bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = __TINY_WS_INTERNAL_DEFAULT_MASK);    
+        bool send(const WSString& data, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = __TINY_WS_INTERNAL_DEFAULT_MASK);
         
         bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin);    
         bool send(const WSString& data, const uint8_t opcode, const bool fin);
