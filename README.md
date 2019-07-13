@@ -197,7 +197,7 @@ client.setFingerprint(ssl_fingerprint);
 ```
 
 ### ESP32
-With the esp32 there is only one option, `ArduinoWebsockets` supports validating the certificate chain by providing the `SSL Certificate` for the server's CA, for example:
+With the esp32 you could either provide the full certificate, or provide no certificate. An example for setting CA Certificate:
 ```c++
 const char ssl_ca_cert[] PROGMEM = \
     "-----BEGIN CERTIFICATE-----\n" \

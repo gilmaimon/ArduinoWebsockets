@@ -73,9 +73,9 @@ namespace websockets {
       _endpoint.setUseMasking(useMasking);
     }
 
+    void setInsecure();
   #ifdef ESP8266
     void setFingerprint(const char* fingerprint);
-    void setInsecure();
   #elif defined(ESP32)
     void setCACert(const char* ca_cert);
   #endif

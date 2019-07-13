@@ -506,7 +506,11 @@ namespace websockets {
 #elif defined(ESP32)
     void WebsocketsClient::setCACert(const char* ca_cert) {
         this->_optional_ssl_ca_cert = ca_cert;
-    }  
+    }
+
+    void WebsocketsClient::setInsecure() {
+        this->_optional_ssl_ca_cert = nullptr;
+    }
 #endif
 
     WebsocketsClient::~WebsocketsClient() {
