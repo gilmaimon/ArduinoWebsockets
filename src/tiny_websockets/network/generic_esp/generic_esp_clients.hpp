@@ -51,8 +51,8 @@ namespace websockets { namespace network {
       return line;
     }
 
-    void read(uint8_t* buffer, const uint32_t len) override {
-      client.read(buffer, len);
+    uint32_t read(uint8_t* buffer, const uint32_t len) override {
+      return client.read(buffer, len);
     }
 
     void close() override {

@@ -150,17 +150,17 @@ namespace internals {
     }
 
     WSString readData(network::TcpClient& socket, uint64_t extendedPayload) {
-        const uint64_t BUFFER_SIZE = 64;
+        const uint64_t BUFFER_SIZE = _WS_BUFFER_SIZE;
 
         WSString data = "";
         uint8_t buffer[BUFFER_SIZE];
         uint64_t done_reading = 0;
         while (done_reading < extendedPayload) {
             uint64_t to_read = extendedPayload - done_reading >= BUFFER_SIZE ? BUFFER_SIZE : extendedPayload - done_reading;
-            socket.read(buffer, to_read);
-            done_reading += to_read;
+            uint32_t numReceived = socket.read(buffer, to_read);
+            done_reading += numReceived;
 
-            for (uint64_t i = 0; i < to_read; i++) {
+            for (uint64_t i = 0; i < numReceived; i++) {
                 data += static_cast<char>(buffer[i]);
             }
         }
@@ -216,6 +216,7 @@ namespace internals {
         frame.opcode = header.opcode;
         frame.payload_length = payloadLength;
         frame.payload = data;
+
         return frame;
     }
 
