@@ -3,7 +3,6 @@
 #include <tiny_websockets/message.hpp>
 #include <tiny_websockets/client.hpp>
 #include <tiny_websockets/internals/wscrypto/crypto.hpp>
-#include <vector>
 
 namespace websockets {
     WebsocketsClient::WebsocketsClient() : WebsocketsClient(std::make_shared<WSDefaultTcpClient>()) {
@@ -84,7 +83,9 @@ namespace websockets {
         WSString requestStr;
         WSString expectedAcceptKey;
     };
-    HandshakeRequestResult generateHandshake(WSString host, WSString uri) {
+    HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri, 
+                                             const std::vector<std::pair<WSString, WSString>>& customHeaders) {
+        
         WSString key = crypto::base64Encode(crypto::randomBytes(16));
 
         WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
@@ -93,6 +94,11 @@ namespace websockets {
         handshake += "Connection: Upgrade\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
         handshake += "Sec-WebSocket-Version: 13\r\n";
+
+        for (const auto& header: customHeaders) {
+            handshake += header.first + ": " + header.second + "\r\n";
+        }
+
         handshake += "\r\n";
 
         HandshakeRequestResult result;
@@ -166,6 +172,10 @@ namespace websockets {
     #endif //_WS_CONFIG_NO_SSL
     }
 
+    void WebsocketsClient::addHeader(const WSInterfaceString key, const WSInterfaceString value) {
+        _customHeaders.push_back({internals::fromInterfaceString(key), internals::fromInterfaceString(value)}); 
+    }
+
     bool WebsocketsClient::connect(WSInterfaceString _url) {
         WSString url = internals::fromInterfaceString(_url);
         WSString protocol = "";
@@ -235,7 +245,7 @@ namespace websockets {
         this->_connectionOpen = this->_client->connect(internals::fromInterfaceString(host), port);
         if (!this->_connectionOpen) return false;
 
-        auto handshake = generateHandshake(internals::fromInterfaceString(host), internals::fromInterfaceString(path));
+        auto handshake = generateHandshake(internals::fromInterfaceString(host), internals::fromInterfaceString(path), _customHeaders);
         this->_client->send(handshake.requestStr);
 
         auto head = this->_client->readLine();

@@ -7,6 +7,7 @@
 #include <tiny_websockets/message.hpp>
 #include <memory>
 #include <functional>
+#include <vector>
 
 namespace websockets {
   enum class WebsocketsEvent {
@@ -32,6 +33,8 @@ namespace websockets {
     
     WebsocketsClient& operator=(const WebsocketsClient& other);
     WebsocketsClient& operator=(const WebsocketsClient&& other);
+
+    void addHeader(const WSInterfaceString key, const WSInterfaceString value);
 
     bool connect(const WSInterfaceString url);
     bool connect(const WSInterfaceString host, const int port, const WSInterfaceString path);
@@ -84,6 +87,7 @@ namespace websockets {
 
   private:
     std::shared_ptr<network::TcpClient> _client;
+    std::vector<std::pair<WSString, WSString>> _customHeaders;
     internals::WebsocketsEndpoint _endpoint;
     bool _connectionOpen;
     MessageCallback _messagesCallback;
