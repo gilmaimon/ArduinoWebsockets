@@ -5,7 +5,7 @@ env:
 before_install:
   - wget http://downloads.arduino.cc/arduino-cli/arduino-cli-$CLI_VERSION-linux64.tar.bz2
   - tar xf arduino-cli-$CLI_VERSION-linux64.tar.bz2
-  - mv arduino-cli-$CLI_VERSION-linux64 $HOME/bin/arduino-cli
+  - mv arduino-cli $HOME/bin/arduino-cli
   - mkdir -p $HOME/bin
   - arduino-cli config init
   - mv $PWD/travis/.cli-config.yml $HOME/.arduino15/arduino-cli.yaml
