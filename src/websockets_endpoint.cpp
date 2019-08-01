@@ -120,9 +120,26 @@ namespace internals {
     }
 
     Header readHeaderFromSocket(network::TcpClient& socket) {
+        int retriesLeft = 10;
+
+        uint32_t numRead = 0;
+        do {
+            --retriesLeft;
+            Header header;
+            header.payload = 0;
+            numRead = socket.read(reinterpret_cast<uint8_t*>(&header), 2);
+
+            if(numRead == 2) {
+                return header;
+            }
+        } while(retriesLeft > 0);
+
+        // TODO: handle bad receives and wrap `read` with fail-proof wrappers
+        Serial.println("This is a nasty internal error in ArduinoWebsockets! Sorry.");
         Header header;
         header.payload = 0;
-        socket.read(reinterpret_cast<uint8_t*>(&header), 2);
+        header.fin = 0;
+        header.opcode = 0;
         return header;
     }
 
