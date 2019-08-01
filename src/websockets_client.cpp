@@ -248,6 +248,12 @@ namespace websockets {
         auto handshake = generateHandshake(internals::fromInterfaceString(host), internals::fromInterfaceString(path), _customHeaders);
         this->_client->send(handshake.requestStr);
 
+        // This check is needed because of an ESP32 lib bug that wont signal that the connection had 
+        // failed in `->connect` (called above), sometimes the disconnect will only be noticed here (after a `send`)
+        if(!available()) {
+            return false;
+        }
+
         auto head = this->_client->readLine();
         if(!doestStartsWith(head, "HTTP/1.1 101")) {
             close(CloseReason_ProtocolError);
