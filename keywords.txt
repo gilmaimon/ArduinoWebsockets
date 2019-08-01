@@ -13,7 +13,16 @@ poll	KEYWORD2
 ping	KEYWORD2
 pong	KEYWORD2
 close	KEYWORD2
+setCACert	KEYWORD2
+setFingerprint	KEYWORD2
+setInsecure	KEYWORD2
 readBlocking	KEYWORD2
+addHeader	KEYWORD2
+
+setFragmentsPolicy	KEYWORD2
+getFragmentsPolicy	KEYWORD2
+getCloseReason	KEYWORD2
+
 
 # Server
 listen	KEYWORD2
@@ -50,3 +59,22 @@ Binary	LITERAL1
 Close	LITERAL1
 Ping	LITERAL1
 Pong	LITERAL1
+
+
+CloseReason	KEYWORD1
+CloseReason_None	LITERAL1
+CloseReason_NormalClosure	LITERAL1
+CloseReason_GoingAway	LITERAL1
+CloseReason_ProtocolError	LITERAL1
+CloseReason_UnsupportedData	LITERAL1
+CloseReason_NoStatusRcvd	LITERAL1
+CloseReason_AbnormalClosure	LITERAL1
+CloseReason_InvalidPayloadData	LITERAL1
+CloseReason_PolicyViolation	LITERAL1
+CloseReason_MessageTooBig	LITERAL1
+CloseReason_InternalServerError	LITERAL1
+
+
+FragmentsPolicy	KEYWORD1
+FragmentsPolicy_Aggregate	LITERAL1
+FragmentsPolicy_Notify	LITERAL1
