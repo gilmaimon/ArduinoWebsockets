@@ -168,7 +168,7 @@ namespace websockets {
     #endif
 
         this->_client = std::shared_ptr<WSDefaultSecuredTcpClient>(client);
-        this->_endpoint = {this->_client};
+        this->_endpoint.setInternalSocket(this->_client);
     #endif //_WS_CONFIG_NO_SSL
     }
 

@@ -115,6 +115,10 @@ namespace internals {
         return *this;
     }
 
+    void WebsocketsEndpoint::setInternalSocket(std::shared_ptr<network::TcpClient> socket) {
+        this->_client = socket;
+    }
+
     bool WebsocketsEndpoint::poll() {
         return this->_client->poll();
     }
@@ -176,7 +180,7 @@ namespace internals {
 
             done_reading += numReceived;
         }
-        return data;
+        return std::move(data);
     }
 
     void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
@@ -193,14 +197,14 @@ namespace internals {
 
     WebsocketsFrame WebsocketsEndpoint::_recv() {
         auto header = readHeaderFromSocket(*this->_client);
-        if(!_client->available()) return {}; // In case of faliure
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
 
         uint64_t payloadLength = readExtendedPayloadLength(*this->_client, header);
-        if(!_client->available()) return {}; // In case of faliure
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
 
 #ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
         if(payloadLength > _WS_CONFIG_MAX_MESSAGE_SIZE) {
-            return {};
+            return WebsocketsFrame();
         }
 #endif
 
@@ -208,20 +212,20 @@ namespace internals {
         // if masking is set
         if (header.mask) {
             readMaskingKey(*this->_client, maskingKey);
-            if(!_client->available()) return {}; // In case of faliure
+            if(!_client->available()) return WebsocketsFrame(); // In case of faliure
         }
 
+        WebsocketsFrame frame;
         // read the message's payload (data) according to the read length
-        WSString data = readData(*this->_client, payloadLength);
-        if(!_client->available()) return {}; // In case of faliure
+        frame.payload = readData(*this->_client, payloadLength);
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
 
         // if masking is set un-mask the message
         if (header.mask) {
-            remaskData(data, maskingKey, payloadLength);
+            remaskData(frame.payload, maskingKey, payloadLength);
         }
 
         // Construct frame from data and header that was read
-        WebsocketsFrame frame;
         frame.fin = header.fin;
         frame.mask = header.mask;
 
@@ -232,9 +236,8 @@ namespace internals {
 
         frame.opcode = header.opcode;
         frame.payload_length = payloadLength;
-        frame.payload = data;
 
-        return frame;
+        return std::move(frame);
     }
 
     WebsocketsMessage WebsocketsEndpoint::handleFrameInStreamingMode(WebsocketsFrame& frame) {
@@ -250,7 +253,7 @@ namespace internals {
                 this->_streamBuilder.first(frame);
                 // if policy is set to notify, return the frame to the user
                 if(this->_fragmentsPolicy == FragmentsPolicy_Notify) {
-                    return WebsocketsMessage(this->_streamBuilder.type(), frame.payload, MessageRole::First);
+                    return WebsocketsMessage(this->_streamBuilder.type(), std::move(frame.payload), MessageRole::First);
                 }
                 else return {};
             }
@@ -260,7 +263,7 @@ namespace internals {
             if(this->_streamBuilder.isOk()) {
                 // if policy is set to notify, return the frame to the user
                 if(this->_fragmentsPolicy == FragmentsPolicy_Notify) {
-                    return WebsocketsMessage(this->_streamBuilder.type(), frame.payload, MessageRole::Continuation);
+                    return WebsocketsMessage(this->_streamBuilder.type(), std::move(frame.payload), MessageRole::Continuation);
                 }
                 else return {};
             }
@@ -279,7 +282,7 @@ namespace internals {
                 else { // in case of notify policy
                     auto messageType = this->_streamBuilder.type();
                     this->_streamBuilder = WebsocketsMessage::StreamBuilder(true);
-                    return WebsocketsMessage(messageType, frame.payload, MessageRole::Last);
+                    return WebsocketsMessage(messageType, std::move(frame.payload), MessageRole::Last);
                 }                
             }
         } 

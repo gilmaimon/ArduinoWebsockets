@@ -40,7 +40,7 @@ namespace websockets {
                 msgRole = MessageRole::Last;
             }
 
-            return WebsocketsMessage(type, frame.payload, msgRole);
+            return WebsocketsMessage(type, std::move(frame.payload), msgRole);
         }
         
         // for validation
@@ -86,7 +86,7 @@ namespace websockets {
                     this->_didErrored = false;
 
                     if(this->_dummyMode == false) {
-                        this->_content = frame.payload;
+                        this->_content = std::move(frame.payload);
                     }
 
                     this->_type = messageTypeFromOpcode(frame.opcode);
@@ -107,7 +107,7 @@ namespace websockets {
 
                 if(frame.isContinuesFragment()) {
                     if(this->_dummyMode == false) {
-                        this->_content += frame.payload;
+                        this->_content += std::move(frame.payload);
                     }
                 } else {
                     badFragment();
@@ -123,7 +123,7 @@ namespace websockets {
 
                 if(frame.isEndOfFragmentsStream()) {
                     if(this->_dummyMode == false) {
-                        this->_content += frame.payload;
+                        this->_content += std::move(frame.payload);
                     }
                     this->_isComplete = true;
                 } else {
