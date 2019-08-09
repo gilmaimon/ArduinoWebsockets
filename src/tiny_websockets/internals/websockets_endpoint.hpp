@@ -42,6 +42,8 @@ namespace websockets {
         WebsocketsEndpoint& operator=(const WebsocketsEndpoint& other);
         WebsocketsEndpoint& operator=(const WebsocketsEndpoint&& other);
 
+        void setInternalSocket(std::shared_ptr<network::TcpClient> socket);
+
         bool poll();
         WebsocketsMessage recv();
         bool send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey = __TINY_WS_INTERNAL_DEFAULT_MASK);    

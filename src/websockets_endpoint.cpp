@@ -115,31 +115,26 @@ namespace internals {
         return *this;
     }
 
+    void WebsocketsEndpoint::setInternalSocket(std::shared_ptr<network::TcpClient> socket) {
+        this->_client = socket;
+    }
+
     bool WebsocketsEndpoint::poll() {
         return this->_client->poll();
     }
 
+    uint32_t readUntilSuccessfullOrError(network::TcpClient& socket, uint8_t* buffer, const uint32_t len) {
+        auto numRead = socket.read(buffer, len);
+        while(numRead == static_cast<uint32_t>(-1) && socket.available()) {
+            numRead = socket.read(buffer, len);
+        }
+        return numRead;
+    }
+
     Header readHeaderFromSocket(network::TcpClient& socket) {
-        int retriesLeft = 10;
-
-        uint32_t numRead = 0;
-        do {
-            --retriesLeft;
-            Header header;
-            header.payload = 0;
-            numRead = socket.read(reinterpret_cast<uint8_t*>(&header), 2);
-
-            if(numRead == 2) {
-                return header;
-            }
-        } while(retriesLeft > 0);
-
-        // TODO: handle bad receives and wrap `read` with fail-proof wrappers
-        Serial.println("This is a nasty internal error in ArduinoWebsockets! Sorry.");
         Header header;
         header.payload = 0;
-        header.fin = 0;
-        header.opcode = 0;
+        readUntilSuccessfullOrError(socket, reinterpret_cast<uint8_t*>(&header), 2);
         return header;
     }
 
@@ -149,13 +144,13 @@ namespace internals {
         if (header.payload == 126) {
             // read next 16 bits as payload length
             uint16_t tmp = 0;
-            socket.read(reinterpret_cast<uint8_t*>(&tmp), 2);
+            readUntilSuccessfullOrError(socket, reinterpret_cast<uint8_t*>(&tmp), 2);
             tmp = (tmp << 8) | (tmp >> 8);
             extendedPayload = tmp;
         }
         else if (header.payload == 127) {
             uint64_t tmp = 0;
-            socket.read(reinterpret_cast<uint8_t*>(&tmp), 8);
+            readUntilSuccessfullOrError(socket, reinterpret_cast<uint8_t*>(&tmp), 8);
             extendedPayload = swapEndianess(tmp);
         }
 
@@ -163,7 +158,7 @@ namespace internals {
     }
 
     void readMaskingKey(network::TcpClient& socket, uint8_t* outputBuffer) {
-        socket.read(reinterpret_cast<uint8_t*>(outputBuffer), 4);
+        readUntilSuccessfullOrError(socket, reinterpret_cast<uint8_t*>(outputBuffer), 4);
     }
 
     WSString readData(network::TcpClient& socket, uint64_t extendedPayload) {
@@ -172,9 +167,12 @@ namespace internals {
         WSString data(extendedPayload, '\0');
         uint8_t buffer[BUFFER_SIZE];
         uint64_t done_reading = 0;
-        while (done_reading < extendedPayload) {
+        while (done_reading < extendedPayload && socket.available()) {
             uint64_t to_read = extendedPayload - done_reading >= BUFFER_SIZE ? BUFFER_SIZE : extendedPayload - done_reading;
-            uint32_t numReceived = socket.read(buffer, to_read);
+            uint32_t numReceived = readUntilSuccessfullOrError(socket, buffer, to_read);
+
+            // On failed reads, skip
+            if(!socket.available()) break;
 
             for (uint64_t i = 0; i < numReceived; i++) {
                 data[done_reading + i] = static_cast<char>(buffer[i]);
@@ -182,7 +180,7 @@ namespace internals {
 
             done_reading += numReceived;
         }
-        return data;
+        return std::move(data);
     }
 
     void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
@@ -199,11 +197,14 @@ namespace internals {
 
     WebsocketsFrame WebsocketsEndpoint::_recv() {
         auto header = readHeaderFromSocket(*this->_client);
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
+
         uint64_t payloadLength = readExtendedPayloadLength(*this->_client, header);
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
 
 #ifdef _WS_CONFIG_MAX_MESSAGE_SIZE
         if(payloadLength > _WS_CONFIG_MAX_MESSAGE_SIZE) {
-            return {};
+            return WebsocketsFrame();
         }
 #endif
 
@@ -211,18 +212,20 @@ namespace internals {
         // if masking is set
         if (header.mask) {
             readMaskingKey(*this->_client, maskingKey);
+            if(!_client->available()) return WebsocketsFrame(); // In case of faliure
         }
 
+        WebsocketsFrame frame;
         // read the message's payload (data) according to the read length
-        WSString data = readData(*this->_client, payloadLength);
+        frame.payload = readData(*this->_client, payloadLength);
+        if(!_client->available()) return WebsocketsFrame(); // In case of faliure
 
         // if masking is set un-mask the message
         if (header.mask) {
-            remaskData(data, maskingKey, payloadLength);
+            remaskData(frame.payload, maskingKey, payloadLength);
         }
 
         // Construct frame from data and header that was read
-        WebsocketsFrame frame;
         frame.fin = header.fin;
         frame.mask = header.mask;
 
@@ -233,9 +236,8 @@ namespace internals {
 
         frame.opcode = header.opcode;
         frame.payload_length = payloadLength;
-        frame.payload = data;
 
-        return frame;
+        return std::move(frame);
     }
 
     WebsocketsMessage WebsocketsEndpoint::handleFrameInStreamingMode(WebsocketsFrame& frame) {
@@ -251,7 +253,7 @@ namespace internals {
                 this->_streamBuilder.first(frame);
                 // if policy is set to notify, return the frame to the user
                 if(this->_fragmentsPolicy == FragmentsPolicy_Notify) {
-                    return WebsocketsMessage(this->_streamBuilder.type(), frame.payload, MessageRole::First);
+                    return WebsocketsMessage(this->_streamBuilder.type(), std::move(frame.payload), MessageRole::First);
                 }
                 else return {};
             }
@@ -261,7 +263,7 @@ namespace internals {
             if(this->_streamBuilder.isOk()) {
                 // if policy is set to notify, return the frame to the user
                 if(this->_fragmentsPolicy == FragmentsPolicy_Notify) {
-                    return WebsocketsMessage(this->_streamBuilder.type(), frame.payload, MessageRole::Continuation);
+                    return WebsocketsMessage(this->_streamBuilder.type(), std::move(frame.payload), MessageRole::Continuation);
                 }
                 else return {};
             }
@@ -280,7 +282,7 @@ namespace internals {
                 else { // in case of notify policy
                     auto messageType = this->_streamBuilder.type();
                     this->_streamBuilder = WebsocketsMessage::StreamBuilder(true);
-                    return WebsocketsMessage(messageType, frame.payload, MessageRole::Last);
+                    return WebsocketsMessage(messageType, std::move(frame.payload), MessageRole::Last);
                 }                
             }
         } 
