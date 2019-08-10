@@ -244,9 +244,9 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
     <td align="center"><a href="https://github.com/bastienvans"><img src="https://github.com/bastienvans.png" width="100px;" alt="ramdor"/><br /><sub><b>bastienvans</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/johneakin"><img src="https://github.com/johneakin.png" width="100px;" alt="ramdor"/><br /><sub><b>johneakin</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/lalten"><img src="https://github.com/lalten.png" width="100px;" alt="ramdor"/><br /><sub><b>lalten</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="ramdor"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
   </tr>
   <tr>
-      <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="ramdor"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/adelin-mcbsoft"><img src="https://github.com/adelin-mcbsoft.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ adelin-mcbsoft</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/Jonty"><img src="https://github.com/Jonty.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ Jonty</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/Nufflee"><img src="https://github.com/Nufflee.png" width="100px;" alt="ramdor"/><br /><sub><b>Nufflee</b></sub></a><br /></td>
