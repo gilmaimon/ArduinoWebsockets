@@ -234,6 +234,27 @@ client.setCACert(ssl_ca_cert);
 ## Contributing
 Contributions are welcomed! Please open issues if you have troubles while using the library or any queshtions on how to get started. Pull requests are welcomed, please open an issue first.
 
+## Contributors
+Thanks for everyone who reported a bug, suggested a feature and contributed to the development of this library.
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ramdor"><img src="https://github.com/ramdor.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ ramdor</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/xgarb"><img src="https://github.com/xgarb.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ xgarb</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/matsujirushi"><img src="https://github.com/matsujirushi.png" width="100px;" alt="ramdor"/><br /><sub><b>matsujirushi</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/bastienvans"><img src="https://github.com/bastienvans.png" width="100px;" alt="ramdor"/><br /><sub><b>bastienvans</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/johneakin"><img src="https://github.com/johneakin.png" width="100px;" alt="ramdor"/><br /><sub><b>johneakin</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/lalten"><img src="https://github.com/lalten.png" width="100px;" alt="ramdor"/><br /><sub><b>lalten</b></sub></a><br /></td>
+  </tr>
+  <tr>
+      <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="ramdor"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/adelin-mcbsoft"><img src="https://github.com/adelin-mcbsoft.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ adelin-mcbsoft</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Jonty"><img src="https://github.com/Jonty.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ Jonty</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Nufflee"><img src="https://github.com/Nufflee.png" width="100px;" alt="ramdor"/><br /><sub><b>Nufflee</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/mmcArg"><img src="https://github.com/mmcArg.png" width="100px;" alt="ramdor"/><br /><sub><b>mmcArg</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/JohnInWI"><img src="https://github.com/JohnInWI.png" width="100px;" alt="ramdor"/><br /><sub><b>JohnInWI</b></sub></a><br /></td>
+  </tr>
+</table>
+
 ## Change Log
 - **14/02/2019 (v0.1.1)** - Initial commits and support for ESP32 and ESP8266 Websocket Clients.
 - **16/02/2019 (v0.1.2)** - Added support for events (Pings, Pongs) and more internal improvements (events handling according to [RFC-6455](https://tools.ietf.org/html/rfc6455))
