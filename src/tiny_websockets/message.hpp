@@ -19,7 +19,7 @@ namespace websockets {
     // The class the user will interact with as a message
     // This message can be partial (so practically this is a Frame and not a message)
     struct WebsocketsMessage {
-        WebsocketsMessage(MessageType msgType, WSString msgData, MessageRole msgRole = MessageRole::Complete) : _type(msgType), _data(internals::fromInternalString(msgData)), _role(msgRole) {}
+        WebsocketsMessage(MessageType msgType, WSString msgData, MessageRole msgRole = MessageRole::Complete) : _type(msgType), _length(msgData.size()), _data(internals::fromInternalString(msgData)), _role(msgRole) {}
         WebsocketsMessage() : WebsocketsMessage(MessageType::Empty, "", MessageRole::Complete) {}
 
         static WebsocketsMessage CreateFromFrame(internals::WebsocketsFrame frame, MessageType overrideType = MessageType::Empty) {
@@ -69,6 +69,7 @@ namespace websockets {
 
 
         WSInterfaceString data() const { return this->_data; }
+        uint32_t length() const { return this->_length; }
 
         class StreamBuilder {
         public:
@@ -175,6 +176,7 @@ namespace websockets {
 
     private:
         const MessageType _type;
+        const uint32_t _length;
         const WSInterfaceString _data;
         const MessageRole _role;
     };
