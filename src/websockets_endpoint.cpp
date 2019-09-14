@@ -98,6 +98,7 @@ namespace internals {
         this->_recvMode = other._recvMode;
         this->_streamBuilder = other._streamBuilder;
         this->_closeReason = other._closeReason;
+        this->_useMasking = other._useMasking;
 
         const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
 
@@ -109,6 +110,7 @@ namespace internals {
         this->_recvMode = other._recvMode;
         this->_streamBuilder = other._streamBuilder;
         this->_closeReason = other._closeReason;
+        this->_useMasking = other._useMasking;
 
         const_cast<WebsocketsEndpoint&>(other)._client = nullptr;
 
