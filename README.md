@@ -16,7 +16,7 @@ Currently (version 0.4.*) the library only works with `ESP8266` and `ESP32`.
 
 ### Installing
 
-You can install the library from the Arduino IDE or using a release ZIP file from the [Github realese page](https://github.com/gilmaimon/ArduinoWebsockets/releases).
+You can install the library from the Arduino IDE or using a release ZIP file from the [Github release page](https://github.com/gilmaimon/ArduinoWebsockets/releases).
 Detailed instructions can be found [here](https://www.ardu-badge.com/ArduinoWebsockets).
 
 ## Basic Usage
