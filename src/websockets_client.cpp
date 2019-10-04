@@ -117,6 +117,19 @@ namespace websockets {
         bool isSuccess;
         WSString serverAccept;
     };
+
+    bool isCaseInsensetiveEqual(const WSString lhs, const WSString rhs) {
+      if (lhs.size() != rhs.size()) return false;
+      
+      for (size_t i = 0; i < lhs.size(); i++) {
+        char leftLowerCaseChar = lhs[i] >= 'A' && lhs[i] <= 'Z' ? lhs[i] - 'A' + 'a' : lhs[i];
+        char righerLowerCaseChar = rhs[i] >= 'A' && rhs[i] <= 'Z' ? rhs[i] - 'A' + 'a' : rhs[i];
+        if (leftLowerCaseChar != righerLowerCaseChar) return false;
+      }
+
+      return true;
+    }
+
     HandshakeResponseResult parseHandshakeResponse(std::vector<WSString> responseHeaders) {
         bool didUpgradeToWebsockets = false, isConnectionUpgraded = false;
         WSString serverAccept = "";
@@ -126,11 +139,11 @@ namespace websockets {
             WSString key = header.substr(0, colonIndex);
             WSString value = header.substr(colonIndex + 2); // +2 (ignore space and ':')
 
-            if(key == "Upgrade") {
-                didUpgradeToWebsockets = (value == "websocket");
-            } else if(key == "Connection") {
-                isConnectionUpgraded = (value == "Upgrade" || value == "upgrade");
-            } else if(key == "Sec-WebSocket-Accept") {
+            if(isCaseInsensetiveEqual(key, "upgrade")) {
+                didUpgradeToWebsockets = isCaseInsensetiveEqual(value, "Websocket");
+            } else if(isCaseInsensetiveEqual(key, "connection")) {
+                isConnectionUpgraded = isCaseInsensetiveEqual(value, "upgrade");
+            } else if(isCaseInsensetiveEqual(key, "Sec-WebSocket-Accept")) {
                 serverAccept = value;
             }
         }
