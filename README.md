@@ -241,19 +241,20 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 <table>
   <tr>
     <td align="center"><a href="https://github.com/ramdor"><img src="https://github.com/ramdor.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ ramdor</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/xgarb"><img src="https://github.com/xgarb.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ xgarb</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/matsujirushi"><img src="https://github.com/matsujirushi.png" width="100px;" alt="ramdor"/><br /><sub><b>matsujirushi</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/bastienvans"><img src="https://github.com/bastienvans.png" width="100px;" alt="ramdor"/><br /><sub><b>bastienvans</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/johneakin"><img src="https://github.com/johneakin.png" width="100px;" alt="ramdor"/><br /><sub><b>johneakin</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/lalten"><img src="https://github.com/lalten.png" width="100px;" alt="ramdor"/><br /><sub><b>lalten</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="ramdor"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/xgarb"><img src="https://github.com/xgarb.png" width="100px;" alt="xgarb"/><br /><sub><b>⭐️ xgarb</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/matsujirushi"><img src="https://github.com/matsujirushi.png" width="100px;" alt="matsujirushi"/><br /><sub><b>matsujirushi</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/bastienvans"><img src="https://github.com/bastienvans.png" width="100px;" alt="bastienvans"/><br /><sub><b>bastienvans</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/johneakin"><img src="https://github.com/johneakin.png" width="100px;" alt="johneakin"/><br /><sub><b>johneakin</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/lalten"><img src="https://github.com/lalten.png" width="100px;" alt="lalten"/><br /><sub><b>lalten</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="elielmarcos"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
   </tr>
   <tr>
-      <td align="center"><a href="https://github.com/adelin-mcbsoft"><img src="https://github.com/adelin-mcbsoft.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ adelin-mcbsoft</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/Jonty"><img src="https://github.com/Jonty.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ Jonty</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/Nufflee"><img src="https://github.com/Nufflee.png" width="100px;" alt="ramdor"/><br /><sub><b>Nufflee</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/mmcArg"><img src="https://github.com/mmcArg.png" width="100px;" alt="ramdor"/><br /><sub><b>mmcArg</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/JohnInWI"><img src="https://github.com/JohnInWI.png" width="100px;" alt="ramdor"/><br /><sub><b>JohnInWI</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/adelin-mcbsoft"><img src="https://github.com/adelin-mcbsoft.png" width="100px;" alt="adelin-mcbsoft"/><br /><sub><b>⭐️ adelin-mcbsoft</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Jonty"><img src="https://github.com/Jonty.png" width="100px;" alt="Jonty"/><br /><sub><b>⭐️ Jonty</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Nufflee"><img src="https://github.com/Nufflee.png" width="100px;" alt="Nufflee"/><br /><sub><b>Nufflee</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/mmcArg"><img src="https://github.com/mmcArg.png" width="100px;" alt="mmcArg"/><br /><sub><b>mmcArg</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/JohnInWI"><img src="https://github.com/JohnInWI.png" width="100px;" alt="JohnInWI"/><br /><sub><b>JohnInWI</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/logdog2709"><img src="https://github.com/logdog2709.png" width="100px;" alt="logdog2709"/><br /><sub><b>logdog2709</b></sub></a><br /></td>
   </tr>
 </table>
 
@@ -281,4 +282,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **26/07/2019 (v0.4.8)** - Feature. Added an `addHeader` method as suggested [in issue #22](https://github.com/gilmaimon/ArduinoWebsockets/issues/21)). Thank you [mmcArg](https://github.com/mmcArg)!
 - **01/08/2019 (v0.4.9)** - Patch - Bugfix. Worked around a bug where connecting to unavailable endpoints would not return false (this is a bug with the `WiFiClient` library itself). Added some missing keywords. Thank you [Nufflee](https://github.com/Nufflee) for pointing out the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/25)!
 - **10/08/2019 (v0.4.10)** - Patch - Bugfix. Fixed a bug (and general in-stability) caused from unchecked and unsafe read operations on sockets. Also improved memory usage and management. Thank you [Jonty](https://github.com/Jonty) for openning and helping with the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/26)!
-- **14/09/2019 (v0.4.11)** - Very small fix - masking settings used to not get copied when using assignment between `WebsocketClient` instances
+- **14/09/2019 (v0.4.11)** - Bugfixes - masking settings used to not get copied when using assignment between `WebsocketClient` instances. Also handshake validation is now case insensitive. Thank you [logdog2709](https://github.com/logdog2709) for pointing out the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/34).
