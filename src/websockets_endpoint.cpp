@@ -186,15 +186,9 @@ namespace internals {
     }
 
     void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
-        for (uint64_t i = 0; i < payloadLength; i++) {
-            data[i] = data[i] ^ maskingKey[i % 4];
-        }
-    }
-
-    void remaskData(char* data, uint64_t payloadLength, const char* maskingKey) {
-        for (uint64_t i = 0; i < payloadLength; i++) {
-            data[i] = data[i] ^ maskingKey[i % 4];
-        }
+      for (uint64_t i = 0; i < payloadLength; i++) {
+        data[i] = data[i] ^ maskingKey[i % 4];
+      }
     }
 
     WebsocketsFrame WebsocketsEndpoint::_recv() {
@@ -352,29 +346,32 @@ namespace internals {
         return send(data.c_str(), data.size(), opcode, fin, mask, maskingKey);
     }
 
-    bool WebsocketsEndpoint::sendHeader(uint64_t len, uint8_t opcode, bool fin, bool mask) {
+    std::string WebsocketsEndpoint::getHeader(uint64_t len, uint8_t opcode, bool fin, bool mask) {
+      std::string header_data;
+      
         if(len < 126) {
             auto header = MakeHeader<Header>(len, opcode, fin, mask);
-            
-            // send the 2 bytes long header
-            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2 + 0);
+            header_data = std::string(reinterpret_cast<char*>(&header), 2 + 0);
         } else if(len < 65536) {
             auto header = MakeHeader<HeaderWithExtended16>(len, opcode, fin, mask);
             header.extendedPayload = (len << 8) | (len >> 8);
-
-            // send the 4 bytes long header
-            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2 + 2);
+            header_data = std::string(reinterpret_cast<char*>(&header), 2 + 2);
         } else {
             auto header = MakeHeader<HeaderWithExtended64>(len, opcode, fin, mask);
             // header.extendedPayload = swapEndianess(len);
             header.extendedPayload = swapEndianess(len);
 
-            // send the 10 bytes long header
-            this->_client->send(reinterpret_cast<uint8_t*>(&header), 2);
-            this->_client->send(reinterpret_cast<uint8_t*>(&header.extendedPayload), 8);
+            header_data = std::string(reinterpret_cast<char*>(&header), 2);
+            header_data += std::string(reinterpret_cast<char*>(&header.extendedPayload), 8);
         }
 
-        return this->_client->available();
+        return header_data;
+    }
+
+    void remaskData(WSString& data, const char* const maskingKey, size_t first, size_t len) {
+      for (size_t i = first; i < first + len; i++) {
+        data[i] = data[i] ^ maskingKey[i % 4];
+      }
     }
 
     bool WebsocketsEndpoint::send(const char* data, const size_t len, const uint8_t opcode, const bool fin, const bool mask, const char* maskingKey) {
@@ -385,30 +382,20 @@ namespace internals {
         }
 #endif
         // send the header
-        sendHeader(len, opcode, fin, mask);
+        std::string message_data = getHeader(len, opcode, fin, mask);
 
-        char* finalData = const_cast<char*>(data);
-        bool shouldFreeBuffer = false;
-
-        if(mask) {
-            if(memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
-                finalData = new char[len];
-                shouldFreeBuffer = true;
-
-                memcpy(finalData, data, len);
-                remaskData(finalData, len, maskingKey);
-            }
-            
-            this->_client->send(reinterpret_cast<const uint8_t*>(maskingKey), 4);
+        if (mask) {
+          message_data += std::string(maskingKey, 4);
         }
 
-        if(len > 0) {
-            this->_client->send(reinterpret_cast<uint8_t*>(finalData), len);
+        size_t data_start = message_data.size();
+        message_data += std::string(data, len);
+
+        if (mask && memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
+          remaskData(message_data, maskingKey, data_start, len);
         }
 
-        if(shouldFreeBuffer) {
-            delete[] finalData;
-        }
+        this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
         return true; // TODO dont assume success
     }
 
