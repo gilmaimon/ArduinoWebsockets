@@ -255,7 +255,7 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
       <td align="center"><a href="https://github.com/mmcArg"><img src="https://github.com/mmcArg.png" width="100px;" alt="mmcArg"/><br /><sub><b>mmcArg</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/JohnInWI"><img src="https://github.com/JohnInWI.png" width="100px;" alt="JohnInWI"/><br /><sub><b>JohnInWI</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/logdog2709"><img src="https://github.com/logdog2709.png" width="100px;" alt="logdog2709"/><br /><sub><b>logdog2709</b></sub></a><br /></td>
-       <td align="center"><a href="https://github.com/elC0mpa"><img src="https://github.com/elC0mpa.png" width="100px;" alt="elC0mpa"/><br /><sub><b>logdog2709</b></sub></a><br /></td>
+       <td align="center"><a href="https://github.com/elC0mpa"><img src="https://github.com/elC0mpa.png" width="100px;" alt="elC0mpa"/><br /><sub><b>elC0mpa</b></sub></a><br /></td>
  </tr>
 </table>
 
