@@ -29,16 +29,19 @@ namespace websockets { namespace network {
   public:
     Esp8266TcpServer() : server(DUMMY_PORT) {}
     bool poll() override {
+      yield();
       return server.hasClient();
     }
 
     bool listen(const uint16_t port) override {
+      yield();
       server.begin(port);
       return available();
     }
     
     TcpClient* accept() override {
       while(available()) {
+        yield();
         auto client = server.available();
         if(client) return new Esp8266TcpClient{client};
       }
@@ -46,10 +49,12 @@ namespace websockets { namespace network {
     }
 
     bool available() override {
+      yield();
       return server.status() != CLOSED;
     }
     
     void close() override {
+      yield();
       server.close();
     }
 
