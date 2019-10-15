@@ -9,7 +9,6 @@ namespace websockets { namespace network {
   public:
     GenericEspTcpClient(WifiClientImpl c) : client(c) {
       client.setNoDelay(true);
-      yield();
     }
     
     GenericEspTcpClient() {}
@@ -18,7 +17,6 @@ namespace websockets { namespace network {
       yield();
       auto didConnect = client.connect(host.c_str(), port);
       client.setNoDelay(true);
-      yield();
       return didConnect;
     }
 
