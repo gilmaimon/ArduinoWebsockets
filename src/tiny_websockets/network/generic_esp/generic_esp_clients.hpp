@@ -26,7 +26,6 @@ namespace websockets { namespace network {
     }
 
     bool available() override {
-      yield();
       return client.connected();
     }
 
