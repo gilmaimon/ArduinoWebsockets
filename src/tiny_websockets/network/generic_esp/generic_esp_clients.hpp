@@ -48,15 +48,15 @@ namespace websockets { namespace network {
     }
     
     WSString readLine() override {
-      int val;
-      WSString line;
-      do {
-        yield();
-        val = client.read();
-        if(val < 0) continue;
-        line += (char)val;
-      } while(val != '\n');
-      if(!available()) close();
+      WSString line = "";
+
+      int ch = -1;
+      while( ch != '\n' && available()) {
+        ch = client.read();
+        if (ch < 0) continue;
+        line += (char) ch;
+      }
+
       return line;
     }
 

@@ -277,6 +277,12 @@ namespace websockets {
         WSString line = "";
         while (true) {
             line = this->_client->readLine();
+
+            if (line.size() < 2) {
+                close(CloseReason_ProtocolError);
+                return false;
+            }
+
             if (line == "\r\n") break;
             // remove /r/n from line end
             line = line.substr(0, line.size() - 2);
