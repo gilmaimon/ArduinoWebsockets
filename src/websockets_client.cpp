@@ -178,6 +178,12 @@ namespace websockets {
         if(this->_optional_ssl_ca_cert) {
             client->setCACert(this->_optional_ssl_ca_cert);
         }
+        if(this->_optional_ssl_client_ca) {
+            client->setCertificate(this->_optional_ssl_client_ca);
+        }
+        if(this->_optional_ssl_private_key) {
+            client->setPrivateKey(this->_optional_ssl_private_key);
+        }
     #endif
 
         this->_client = std::shared_ptr<WSDefaultSecuredTcpClient>(client);
@@ -543,8 +549,18 @@ namespace websockets {
         this->_optional_ssl_ca_cert = ca_cert;
     }
 
+    void WebsocketsClient::setCertificate(const char* client_ca) {
+        this->_optional_ssl_client_ca = client_ca;
+    }
+    
+    void WebsocketsClient::setPrivateKey(const char* private_key) {
+        this->_optional_ssl_private_key = private_key;
+    }
+
     void WebsocketsClient::setInsecure() {
         this->_optional_ssl_ca_cert = nullptr;
+        this->_optional_ssl_client_ca = nullptr;
+        this->_optional_ssl_private_key = nullptr;
     }
 #endif
 

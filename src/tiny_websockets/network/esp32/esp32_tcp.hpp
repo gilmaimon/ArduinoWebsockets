@@ -18,6 +18,14 @@ namespace websockets { namespace network {
     void setCACert(const char* ca_cert) {
       this->client.setCACert(ca_cert);
     }
+
+    void setCertificate(const char* client_ca) {
+      this->client.setCertificate(client_ca);
+    }
+    
+    void setPrivateKey(const char* private_key) {
+      this->client.setPrivateKey(private_key);
+    }    
   };
 
 

@@ -81,6 +81,8 @@ namespace websockets {
     void setFingerprint(const char* fingerprint);
   #elif defined(ESP32)
     void setCACert(const char* ca_cert);
+    void setCertificate(const char* client_ca);
+    void setPrivateKey(const char* private_key);
   #endif
 
     virtual ~WebsocketsClient();
@@ -102,6 +104,8 @@ namespace websockets {
     const char* _optional_ssl_fingerprint = nullptr;
   #elif defined(ESP32)
     const char* _optional_ssl_ca_cert = nullptr;
+    const char* _optional_ssl_client_ca = nullptr;
+    const char* _optional_ssl_private_key = nullptr;
   #endif
 
     void _handlePing(WebsocketsMessage);
