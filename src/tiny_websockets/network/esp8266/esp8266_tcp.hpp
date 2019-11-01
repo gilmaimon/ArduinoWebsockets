@@ -21,6 +21,15 @@ namespace websockets { namespace network {
     void setFingerprint(const char* fingerprint) {
       this->client.setFingerprint(fingerprint);
     }
+    
+    void setClientRSACert(const X509List *cert, const PrivateKey *sk) {
+      this->client.setClientRSACert(cert, sk);
+	}
+	
+    void setTrustAnchors(const X509List *ta){
+      this->client.setTrustAnchors(ta);
+	}
+        
   };
 
   #define DUMMY_PORT 0
