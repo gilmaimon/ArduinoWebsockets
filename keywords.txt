@@ -45,6 +45,8 @@ isLast	KEYWORD2
 WebsocketsMessage	KEYWORD1
 data	KEYWORD2
 type	KEYWORD2
+rawData	KEYWORD2
+c_str	KEYWORD2
 
 WebsocketsEvent	KEYWORD1
 ConnectionOpened	LITERAL1
