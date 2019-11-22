@@ -176,6 +176,13 @@ void loop() {
 ```
 ***Note:** for ESP32 you only need to change to code that connects to WiFi (replace `#include <ESP8266WiFi.h>` with `#include <WiFi.h>`), everything else stays the same.*
 
+## Binary Data
+
+For binary data it is recommended to use `msg.rawData()` which returns a `std::string`, or `msg.c_str()` which returns a `const char*`. 
+The reason is that `msg.data()` returns an Arduino `String`, which is great for Serial printing and very basic memory handling but bad for most binary usages.
+
+See [issue #32](https://github.com/gilmaimon/ArduinoWebsockets/issues/32) for further information.
+
 ## SSL and WSS Support
 
 No matter what board you are using, in order to use WSS (websockets over SSL) you need to use
@@ -285,4 +292,5 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **10/08/2019 (v0.4.10)** - Patch - Bugfix. Fixed a bug (and general in-stability) caused from unchecked and unsafe read operations on sockets. Also improved memory usage and management. Thank you [Jonty](https://github.com/Jonty) for openning and helping with the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/26)!
 - **14/09/2019 (v0.4.11)** - Bugfixes - masking settings used to not get copied when using assignment between `WebsocketClient` instances. Also handshake validation is now case insensitive. Thank you [logdog2709](https://github.com/logdog2709) for pointing out the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/34).
 - **12/10/2019 (v0.4.12)** - Patch - Messages are now sent as a single TCP buffer instead of separate messages. Thank you [elC0mpa](https://github.com/elC0mpa) for posting the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/44).
-- **19/10/2019 (v0.4.13)** - Patch - added `yield` calls in order to prevent software-watchdog resets on esp8266 (on long messages). Thank you [elC0mpa](https://github.com/elC0mpa) for documenting and helping with the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/43).  
+- **19/10/2019 (v0.4.13)** - Patch - added `yield` calls in order to prevent software-watchdog resets on esp8266 (on long messages). Thank you [elC0mpa](https://github.com/elC0mpa) for documenting and helping with the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/43).
+- **22/11/2019 (v0.4.14)** - Added `rawData` and `c_str` as acccessors in `WebsocketsMessage` so now the raw data can be acccessed which should solve issue #32 and not break any existing sketch.
