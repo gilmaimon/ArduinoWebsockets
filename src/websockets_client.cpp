@@ -94,6 +94,8 @@ namespace websockets {
         handshake += "Connection: Upgrade\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
         handshake += "Sec-WebSocket-Version: 13\r\n";
+        handshake += "User-Agent: TinyWebsockets Client\r\n";
+        handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
 
         for (const auto& header: customHeaders) {
             handshake += header.first + ": " + header.second + "\r\n";
