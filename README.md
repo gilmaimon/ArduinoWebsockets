@@ -264,6 +264,11 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
       <td align="center"><a href="https://github.com/logdog2709"><img src="https://github.com/logdog2709.png" width="100px;" alt="logdog2709"/><br /><sub><b>logdog2709</b></sub></a><br /></td>
        <td align="center"><a href="https://github.com/elC0mpa"><img src="https://github.com/elC0mpa.png" width="100px;" alt="elC0mpa"/><br /><sub><b>elC0mpa</b></sub></a><br /></td>
  </tr>
+    
+ <tr>
+      <td align="center"><a href="https://github.com/oofnik"><img src="https://github.com/oofnik.png" width="100px;" alt="oofnik"/><br /><sub><b>⭐️ oofnik</b></sub></a><br /></td>
+ </tr>
+ 
 </table>
 
 ## Change Log
@@ -295,3 +300,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **19/10/2019 (v0.4.13)** - Patch - added `yield` calls in order to prevent software-watchdog resets on esp8266 (on long messages). Thank you [elC0mpa](https://github.com/elC0mpa) for documenting and helping with the [issue](https://github.com/gilmaimon/ArduinoWebsockets/issues/43).
 - **22/11/2019 (v0.4.14)** - Added `rawData` and `c_str` as acccessors in `WebsocketsMessage` so now the raw data can be acccessed which should solve issue #32 and not break any existing sketch.
 - **24/02/20 (v0.4.15)** - Added `Origin` and `User-Agent` headers to requests sent by the library, this seems to be required by some servers. Thank you [imesut](https://github.com/imesut) for pointing out the issue.
+- **21/04/20 (v0.4.16)** - Merged pull request by @oofnik which added 2 way SSL auth for ESP32 and ES8266. Thank you very [oofnik](https://github.com/oofnik) for the contribuation.
