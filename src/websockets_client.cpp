@@ -170,8 +170,16 @@ namespace websockets {
         auto client = new WSDefaultSecuredTcpClient;
         
     #ifdef ESP8266
-        if(this->_optional_ssl_fingerprint) {
-            client->setFingerprint(this->_optional_ssl_fingerprint);
+        if(this->_optional_ssl_fingerprint || (this->_optional_ssl_cert && this->_optional_ssl_private_key) || this->_optional_ssl_trust_anchors) {
+            if(this->_optional_ssl_fingerprint) {
+                client->setFingerprint(this->_optional_ssl_fingerprint);
+            }
+            if(this->_optional_ssl_cert && this->_optional_ssl_private_key) {
+                client->setClientRSACert(this->_optional_ssl_cert, this->_optional_ssl_private_key);
+            }
+            if(this->_optional_ssl_trust_anchors) {
+                client->setTrustAnchors(this->_optional_ssl_trust_anchors);
+            }
         }
         else {
             client->setInsecure();
@@ -179,6 +187,12 @@ namespace websockets {
     #elif defined(ESP32)
         if(this->_optional_ssl_ca_cert) {
             client->setCACert(this->_optional_ssl_ca_cert);
+        }
+        if(this->_optional_ssl_client_ca) {
+            client->setCertificate(this->_optional_ssl_client_ca);
+        }
+        if(this->_optional_ssl_private_key) {
+            client->setPrivateKey(this->_optional_ssl_private_key);
         }
     #endif
 
@@ -539,14 +553,37 @@ namespace websockets {
 
     void WebsocketsClient::setInsecure() {
         this->_optional_ssl_fingerprint = nullptr;
+    	this->_optional_ssl_cert = nullptr;
+    	this->_optional_ssl_private_key = nullptr;
+    	this->_optional_ssl_trust_anchors = nullptr;
     }
+    
+    void WebsocketsClient::setClientRSACert(const X509List *cert, const PrivateKey *sk) {
+    	this->_optional_ssl_cert = cert;
+    	this->_optional_ssl_private_key = sk;
+	}
+	
+    void WebsocketsClient::setTrustAnchors(const X509List *ta){
+    	this->_optional_ssl_trust_anchors = ta;
+	}
+    
 #elif defined(ESP32)
     void WebsocketsClient::setCACert(const char* ca_cert) {
         this->_optional_ssl_ca_cert = ca_cert;
     }
 
+    void WebsocketsClient::setCertificate(const char* client_ca) {
+        this->_optional_ssl_client_ca = client_ca;
+    }
+    
+    void WebsocketsClient::setPrivateKey(const char* private_key) {
+        this->_optional_ssl_private_key = private_key;
+    }
+
     void WebsocketsClient::setInsecure() {
         this->_optional_ssl_ca_cert = nullptr;
+        this->_optional_ssl_client_ca = nullptr;
+        this->_optional_ssl_private_key = nullptr;
     }
 #endif
 

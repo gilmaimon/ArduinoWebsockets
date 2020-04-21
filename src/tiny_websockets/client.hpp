@@ -79,8 +79,12 @@ namespace websockets {
     void setInsecure();
   #ifdef ESP8266
     void setFingerprint(const char* fingerprint);
+    void setClientRSACert(const X509List *cert, const PrivateKey *sk);
+    void setTrustAnchors(const X509List *ta);
   #elif defined(ESP32)
     void setCACert(const char* ca_cert);
+    void setCertificate(const char* client_ca);
+    void setPrivateKey(const char* private_key);
   #endif
 
     virtual ~WebsocketsClient();
@@ -100,8 +104,13 @@ namespace websockets {
 
   #ifdef ESP8266
     const char* _optional_ssl_fingerprint = nullptr;
+    const X509List* _optional_ssl_trust_anchors = nullptr;
+    const X509List* _optional_ssl_cert = nullptr;
+    const PrivateKey* _optional_ssl_private_key = nullptr;
   #elif defined(ESP32)
     const char* _optional_ssl_ca_cert = nullptr;
+    const char* _optional_ssl_client_ca = nullptr;
+    const char* _optional_ssl_private_key = nullptr;
   #endif
 
     void _handlePing(WebsocketsMessage);
