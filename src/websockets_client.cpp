@@ -84,10 +84,6 @@ namespace websockets {
         WSString expectedAcceptKey;
     };
 
-    bool keywordDoesNotExist(const std::vector<WSString>& usedKeys, const std::string& keyWord) {
-        return std::find(usedKeys.begin(), usedKeys.end(), keyWord) == usedKeys.end();
-    }
-
     bool shouldAddDefaultHeader(const std::string& keyWord, const std::vector<std::pair<WSString, WSString>>& customHeaders) {
         for (const auto& header : customHeaders) {
             if(!keyWord.compare(header.first)) {
