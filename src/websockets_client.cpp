@@ -83,6 +83,17 @@ namespace websockets {
         WSString requestStr;
         WSString expectedAcceptKey;
     };
+
+    bool shouldAddDefaultHeader(const std::string& keyWord, const std::vector<std::pair<WSString, WSString>>& customHeaders) {
+        for (const auto& header : customHeaders) {
+            if(!keyWord.compare(header.first)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri, 
                                              const std::vector<std::pair<WSString, WSString>>& customHeaders) {
         
@@ -90,15 +101,30 @@ namespace websockets {
 
         WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
         handshake += "Host: " + host + "\r\n";
-        handshake += "Upgrade: websocket\r\n";
-        handshake += "Connection: Upgrade\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
-        handshake += "Sec-WebSocket-Version: 13\r\n";
-        handshake += "User-Agent: TinyWebsockets Client\r\n";
-        handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
 
         for (const auto& header: customHeaders) {
             handshake += header.first + ": " + header.second + "\r\n";
+        }
+
+        if (shouldAddDefaultHeader("Upgrade", customHeaders)) {
+            handshake += "Upgrade: websocket\r\n";
+        }
+
+        if (shouldAddDefaultHeader("Connection", customHeaders)) {
+            handshake += "Connection: Upgrade\r\n";
+        }
+
+        if (shouldAddDefaultHeader("Sec-WebSocket-Version", customHeaders)) {
+            handshake += "Sec-WebSocket-Version: 13\r\n";
+        }
+
+        if (shouldAddDefaultHeader("User-Agent", customHeaders)) {
+            handshake += "User-Agent: TinyWebsockets Client\r\n";
+        }
+
+        if (shouldAddDefaultHeader("Origin", customHeaders)) {
+            handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
         }
 
         handshake += "\r\n";
