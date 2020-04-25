@@ -115,7 +115,7 @@ namespace websockets {
             handshake += "Upgrade: websocket\r\n";
         }
 
-        if (keywordDoesNotExist("Connection", customHeaders)) {
+        if (shouldAddDefaultHeader("Connection", customHeaders)) {
             handshake += "Connection: Upgrade\r\n";
         }
 
