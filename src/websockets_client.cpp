@@ -104,20 +104,25 @@ namespace websockets {
             usedKeys.push_back(header.first);
         }
 
-        if (keywordDoesNotExist(usedKeys, "Upgrade"))
+        if (keywordDoesNotExist(usedKeys, "Upgrade")) {
             handshake += "Upgrade: websocket\r\n";
+        }
 
-        if (keywordDoesNotExist(usedKeys, "Connection"))
+        if (keywordDoesNotExist(usedKeys, "Connection")) {
             handshake += "Connection: Upgrade\r\n";
+        }
 
-        if (keywordDoesNotExist(usedKeys, "Sec-WebSocket-Version"))
+        if (keywordDoesNotExist(usedKeys, "Sec-WebSocket-Version")) {
             handshake += "Sec-WebSocket-Version: 13\r\n";
+        }
 
-        if (keywordDoesNotExist(usedKeys, "User-Agent"))
+        if (keywordDoesNotExist(usedKeys, "User-Agent")) {
             handshake += "User-Agent: TinyWebsockets Client\r\n";
+        }
 
-        if (keywordDoesNotExist(usedKeys, "Origin"))
+        if (keywordDoesNotExist(usedKeys, "Origin")) {
             handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
+        }
 
         handshake += "\r\n";
 
