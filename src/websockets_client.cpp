@@ -107,33 +107,27 @@ namespace websockets {
         handshake += "Host: " + host + "\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
 
-        std::vector<WSString> usedKeys;
-
         for (const auto& header: customHeaders) {
             handshake += header.first + ": " + header.second + "\r\n";
-
-            if (keywordDoesNotExist(usedKeys, header.first)) {
-                usedKeys.push_back(header.first);
-            }
         }
 
-        if (keywordDoesNotExist(usedKeys, "Upgrade")) {
+        if (shouldAddDefaultHeader("Upgrade", customHeaders)) {
             handshake += "Upgrade: websocket\r\n";
         }
 
-        if (keywordDoesNotExist(usedKeys, "Connection")) {
+        if (keywordDoesNotExist("Connection", customHeaders)) {
             handshake += "Connection: Upgrade\r\n";
         }
 
-        if (keywordDoesNotExist(usedKeys, "Sec-WebSocket-Version")) {
+        if (shouldAddDefaultHeader("Sec-WebSocket-Version", customHeaders)) {
             handshake += "Sec-WebSocket-Version: 13\r\n";
         }
 
-        if (keywordDoesNotExist(usedKeys, "User-Agent")) {
+        if (shouldAddDefaultHeader("User-Agent", customHeaders)) {
             handshake += "User-Agent: TinyWebsockets Client\r\n";
         }
 
-        if (keywordDoesNotExist(usedKeys, "Origin")) {
+        if (shouldAddDefaultHeader("Origin", customHeaders)) {
             handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
         }
 
