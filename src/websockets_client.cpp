@@ -101,7 +101,10 @@ namespace websockets {
 
         for (const auto& header: customHeaders) {
             handshake += header.first + ": " + header.second + "\r\n";
-            usedKeys.push_back(header.first);
+
+            if (keywordDoesNotExist(usedKeys, header.first)) {
+                usedKeys.push_back(header.first);
+            }
         }
 
         if (keywordDoesNotExist(usedKeys, "Upgrade")) {
