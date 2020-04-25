@@ -84,7 +84,7 @@ namespace websockets {
         WSString expectedAcceptKey;
     };
 
-    bool keywordDoesNotExist(std::vector<WSString>& usedKeys, std::string keyWord) {
+    bool keywordDoesNotExist(const std::vector<WSString>& usedKeys, const std::string& keyWord) {
         return std::find(usedKeys.begin(), usedKeys.end(), keyWord) == usedKeys.end();
     }
 
