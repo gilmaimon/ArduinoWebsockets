@@ -267,6 +267,7 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
     
  <tr>
       <td align="center"><a href="https://github.com/oofnik"><img src="https://github.com/oofnik.png" width="100px;" alt="oofnik"/><br /><sub><b>⭐️ oofnik</b></sub></a><br /></td>
+          <td align="center"><a href="https://github.com/zastrixarundell"><img src="https://github.com/zastrixarundell.png" width="100px;" alt="zastrixarundell"/><br /><sub><b>⭐️ zastrixarundell</b></sub></a><br /></td>
  </tr>
  
 </table>
@@ -301,3 +302,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **22/11/2019 (v0.4.14)** - Added `rawData` and `c_str` as acccessors in `WebsocketsMessage` so now the raw data can be acccessed which should solve issue #32 and not break any existing sketch.
 - **24/02/20 (v0.4.15)** - Added `Origin` and `User-Agent` headers to requests sent by the library, this seems to be required by some servers. Thank you [imesut](https://github.com/imesut) for pointing out the issue.
 - **21/04/20 (v0.4.16)** - Merged pull request by @oofnik which added 2 way SSL auth for ESP32 and ES8266. Thank you very [oofnik](https://github.com/oofnik) for the contribuation.
+- **25/04/20 (v0.4.17)** - Merged pull request by Luka Bodroža (@zastrixarundell) which fixed [issue #69](https://github.com/gilmaimon/ArduinoWebsockets/issues/69) - default headers (like Origin, Host) are now customizable via the `addHeader` method. Thank you [zastrixarundell](https://github.com/zastrixarundell) for the contribution.
