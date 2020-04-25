@@ -83,6 +83,11 @@ namespace websockets {
         WSString requestStr;
         WSString expectedAcceptKey;
     };
+
+    bool keywordDoesNotExist(std::vector<WSString>& usedKeys, WSSstring& keyWord) {
+        return std::find(usedKeys.begin(), usedKeys.end(), keyWord) == usedKeys.end();
+    }
+
     HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri, 
                                              const std::vector<std::pair<WSString, WSString>>& customHeaders) {
         
@@ -90,16 +95,29 @@ namespace websockets {
 
         WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
         handshake += "Host: " + host + "\r\n";
-        handshake += "Upgrade: websocket\r\n";
-        handshake += "Connection: Upgrade\r\n";
         handshake += "Sec-WebSocket-Key: " + key + "\r\n";
-        handshake += "Sec-WebSocket-Version: 13\r\n";
-        handshake += "User-Agent: TinyWebsockets Client\r\n";
-        handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
+
+        std::vector<WSString> usedKeys;
 
         for (const auto& header: customHeaders) {
             handshake += header.first + ": " + header.second + "\r\n";
+            usedKeys.push_back(header.first);
         }
+
+        if (keywordDoesNotExist(usedKeys, "Upgrade"))
+            handshake += "Upgrade: websocket\r\n";
+
+        if (keywordDoesNotExist(usedKeys, "Connection"))
+            handshake += "Connection: Upgrade\r\n";
+
+        if (keywordDoesNotExist(usedKeys, "Sec-WebSocket-Version"))
+            handshake += "Sec-WebSocket-Version: 13\r\n";
+
+        if (keywordDoesNotExist(usedKeys, "User-Agent"))
+            handshake += "User-Agent: TinyWebsockets Client\r\n";
+
+        if (keywordDoesNotExist(usedKeys, "Origin"))
+            handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
 
         handshake += "\r\n";
 
