@@ -87,7 +87,7 @@ namespace websockets {
     bool shouldAddDefaultHeader(const std::string& keyWord, const std::vector<std::pair<WSString, WSString>>& customHeaders) {
         for (const auto& header : customHeaders) {
             if(!keyWord.compare(header.first)) {
-                return false
+                return false;
             }
         }
 
