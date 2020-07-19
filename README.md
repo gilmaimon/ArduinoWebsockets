@@ -193,7 +193,7 @@ client.connect("wss://your-secured-server-ip:port/uri");
 The next sections describe board-specific code for using WSS with the library.
 
 ### ESP8266
-With the esp8266 there are 2 ways for using WSS. By default, `ArduinoWebsockets` does not validate the certificate chain. This can be set explicitly using:
+With the esp8266 there are multiple ways for using WSS. By default, `ArduinoWebsockets` does not validate the certificate chain. This can be set explicitly using:
 ```c++
 client.setInsecure();
 ```
@@ -204,6 +204,20 @@ const char ssl_fingerprint[] PROGMEM = "D5 07 4D 79 B2 D2 53 D7 74 E6 1B 46 C5 8
 
 client.setFingerprint(ssl_fingerprint);
 ```
+
+or you could use the `setKnownKey()` method to specify the public key of a certificate in order to validate the server you are connecting to.
+```
+PublicKey *publicKey = new PublicKey(public_key);
+client.setKnownKey(publicKey);
+```
+or you can specify the Certificate Authority (CA) using `setTrustAnchors` method, as follows:
+
+```
+X509List *serverTrustedCA = new X509List(ca_cert);
+client.setTrustAnchors(serverTrustedCA);
+```
+
+For client-side certificate validation, you can use RSA or EC certificates, using the method `setClientRSACert` or `setClientECCert` .
 
 ### ESP32
 With the esp32 you could either provide the full certificate, or provide no certificate. An example for setting CA Certificate:
