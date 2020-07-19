@@ -200,11 +200,11 @@ namespace websockets {
             if(this->_optional_ssl_fingerprint) {
                 client->setFingerprint(this->_optional_ssl_fingerprint);
             }
-            if(this->_optional_ssl_cert && this->_optional_ssl_private_key) {
-                client->setClientRSACert(this->_optional_ssl_cert, this->_optional_ssl_private_key);
-            }
             if(this->_optional_ssl_trust_anchors) {
                 client->setTrustAnchors(this->_optional_ssl_trust_anchors);
+            }
+            if(this->_optional_ssl_cert && this->_optional_ssl_private_key) {
+                client->setClientRSACert(this->_optional_ssl_cert, this->_optional_ssl_private_key);
             }
         }
         else {
