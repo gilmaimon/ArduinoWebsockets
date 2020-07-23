@@ -30,6 +30,11 @@ const char* password = "password"; //Enter Password
 
 const char* websockets_connection_string = "wss://echo.websocket.org/"; //Enter server adress
 
+/* NTP Time Servers */
+const char *ntp1 = "time.windows.com";
+const char *ntp2 = "pool.ntp.org";
+time_t now;
+
 // The hardcoded certificate authority for this example.
 // Don't use it on your own apps!!!!!
 const char ca_cert[] PROGMEM = R"EOF(
@@ -133,11 +138,25 @@ void setup() {
     // Connect to wifi
     WiFi.begin(ssid, password);
 
-    // Wait some time to connect to wifi
-    for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
-        Serial.print(".");
-        delay(1000);
+    Serial.println("Connecting to WiFi...");
+
+    // Wait until we are connected to WiFi
+    while(WiFi.status() != WL_CONNECTED) {
+      Serial.print(".");
+      delay(1000);
     }
+
+    Serial.println("Successfully connected to WiFi, setting time... ");
+
+    // We configure ESP8266's time, as we need it to validate the certificates
+    configTime(2 * 3600, 1, ntp1, ntp2);
+    while(now < 2 * 3600) {
+        Serial.print(".");
+        delay(500);
+        now = time(nullptr);
+    }
+    Serial.println("");
+    Serial.println("Time set, connecting to server...");
 
     // run callback when messages are received
     client.onMessage(onMessageCallback);
