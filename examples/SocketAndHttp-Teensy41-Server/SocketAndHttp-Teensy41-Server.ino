@@ -124,7 +124,7 @@ void pollSocketClients() {
 }
 
 void sendHttpReply(EthernetClient &client) {
-  // Send an website that connects to the websocket server and allows to
+  // Send a website that connects to the websocket server and allows to
   // communicate with the teensy.
 
   const char* header = 
