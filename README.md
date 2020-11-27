@@ -12,7 +12,7 @@ The library provides simple and easy interface for websockets work (Client and S
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.4.*) the library only works with `ESP8266` and `ESP32`.
+Currently (version 0.4.*) the library only works with `ESP8266`, `ESP32` and `Teensy 4.1`.
 
 ### Installing
 
@@ -253,6 +253,9 @@ const char ssl_ca_cert[] PROGMEM = \
 
 client.setCACert(ssl_ca_cert);
 ```
+
+### TEENSY 4.1
+Currently WSS is not implemented.
 
 ## Contributing
 Contributions are welcomed! Please open issues if you have troubles while using the library or any queshtions on how to get started. Pull requests are welcomed, please open an issue first.
