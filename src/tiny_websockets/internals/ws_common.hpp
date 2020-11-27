@@ -40,4 +40,14 @@ namespace websockets {
         // OpenSSL Dependent
         #define WSDefaultSecuredTcpClient websockets::network::SecuredEsp32TcpClient
     #endif //_WS_CONFIG_NO_SSL
+
+#elif defined(ARDUINO_TEENSY41)
+    #define PLATFORM_DOES_NOT_SUPPORT_BLOCKING_READ
+    #define _WS_CONFIG_NO_SSL
+
+    #include <tiny_websockets/network/teensy41/teensy41_tcp_client.hpp>
+    #include <tiny_websockets/network/teensy41/teensy41_tcp_server.hpp>
+
+    #define WSDefaultTcpClient websockets::network::Teensy41TcpClient
+    #define WSDefaultTcpServer websockets::network::Teensy41TcpServer    
 #endif
