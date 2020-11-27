@@ -33,12 +33,9 @@ WebsocketsClient client;
 // `teensyMac` helper.
 byte mac[6];
 
-// Enter websockets server host.
-// Note: Using a prefix like "ws://" doesn't seem to work.
-const char* host  = "echo.websocket.org";
-
-// Enter websockets server port.
-const uint16_t port = 80;
+// Enter websockets url.
+// Note: wss:// currently not working.
+const char* url  = "ws://echo.websocket.org";
 
 void setup() {
   // Set the MAC address.
@@ -58,11 +55,8 @@ void setup() {
   }
 
   // Connect to websocket server.
-  if (client.connect(host, port, "/")) {
-    Serial.printf("Connected to server %s\n", host);
-    // Also log any non default port.
-    if (port != 80) Serial.printf(":%d", port);
-    Serial.println();
+  if (client.connect(url)) {
+    Serial.printf("Connected to server %s\n", url);
     // Send welcome message.
     client.send("Hello Server");
   } else {
