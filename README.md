@@ -12,7 +12,7 @@ The library provides simple and easy interface for websockets work (Client and S
 This section should help you get started with the library. If you have any questions feel free to open an issue.
 
 ### Prerequisites
-Currently (version 0.4.*) the library only works with `ESP8266`, `ESP32` and `Teensy 4.1`.
+Currently (version 0.5.*) the library only works with `ESP8266`, `ESP32` and `Teensy 4.1`.
 
 ### Installing
 
@@ -264,13 +264,13 @@ Contributions are welcomed! Please open issues if you have troubles while using 
 Thanks for everyone who reported a bug, suggested a feature and contributed to the development of this library.
 <table>
   <tr>
+    <td align="center"><a href="https://github.com/arnoson"><img src="https://github.com/arnoson.png" width="100px;" alt="arnoson"/><br /><sub><b>⭐️ arnoson</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/ramdor"><img src="https://github.com/ramdor.png" width="100px;" alt="ramdor"/><br /><sub><b>⭐️ ramdor</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/xgarb"><img src="https://github.com/xgarb.png" width="100px;" alt="xgarb"/><br /><sub><b>⭐️ xgarb</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/matsujirushi"><img src="https://github.com/matsujirushi.png" width="100px;" alt="matsujirushi"/><br /><sub><b>matsujirushi</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/bastienvans"><img src="https://github.com/bastienvans.png" width="100px;" alt="bastienvans"/><br /><sub><b>bastienvans</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/johneakin"><img src="https://github.com/johneakin.png" width="100px;" alt="johneakin"/><br /><sub><b>johneakin</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/lalten"><img src="https://github.com/lalten.png" width="100px;" alt="lalten"/><br /><sub><b>lalten</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="elielmarcos"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
   </tr>
   <tr>
       <td align="center"><a href="https://github.com/adelin-mcbsoft"><img src="https://github.com/adelin-mcbsoft.png" width="100px;" alt="adelin-mcbsoft"/><br /><sub><b>⭐️ adelin-mcbsoft</b></sub></a><br /></td>
@@ -285,6 +285,8 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
  <tr>
       <td align="center"><a href="https://github.com/oofnik"><img src="https://github.com/oofnik.png" width="100px;" alt="oofnik"/><br /><sub><b>⭐️ oofnik</b></sub></a><br /></td>
           <td align="center"><a href="https://github.com/zastrixarundell"><img src="https://github.com/zastrixarundell.png" width="100px;" alt="zastrixarundell"/><br /><sub><b>⭐️ zastrixarundell</b></sub></a><br /></td>
+        <td align="center"><a href="https://github.com/elielmarcos"><img src="https://github.com/elielmarcos.png" width="100px;" alt="elielmarcos"/><br /><sub><b>elielmarcos</b></sub></a><br /></td>
+
  </tr>
  
 </table>
@@ -321,3 +323,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **21/04/20 (v0.4.16)** - Merged pull request by @oofnik which added 2 way SSL auth for ESP32 and ES8266. Thank you very [oofnik](https://github.com/oofnik) for the contribuation.
 - **25/04/20 (v0.4.17)** - Merged pull request by Luka Bodroža (@zastrixarundell) which fixed [issue #69](https://github.com/gilmaimon/ArduinoWebsockets/issues/69) - default headers (like Origin, Host) are now customizable via the `addHeader` method. Thank you [zastrixarundell](https://github.com/zastrixarundell) for the contribution.
 - **23/07/20 (v0.4.18)** - Merged pull request by Adelin U (@adelin-mcbsoft) which fixed [issue #84](https://github.com/gilmaimon/ArduinoWebsockets/issues/84) - SSL bug-fixing, implemented public-key certificate validation & EC Certificates for client-side. Thank you Adelin!
+- **28/11/20 (v0.5.0)** - Support for Teensy 4.1 added by the awesome [@arnoson](https://github.com/arnoson). Supporting plaintext client/server communication and providing new and useful examples. Thank you arnoson!
