@@ -37,7 +37,7 @@ client.send("Hello Server!");
 Waiting for messages:
 ```c++
 client.onMessage([](WebsocketsMessage msg){
-    Serial.prinln("Got Message: " + msg.data());
+    Serial.println("Got Message: " + msg.data());
 });
 ```
 
