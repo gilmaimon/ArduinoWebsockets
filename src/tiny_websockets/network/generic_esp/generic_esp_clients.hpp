@@ -3,6 +3,9 @@
 #include <tiny_websockets/internals/ws_common.hpp>
 #include <tiny_websockets/network/tcp_client.hpp>
 
+// Timeout for connection attempts in milliseconds
+#define readLineTimeout 1000
+
 namespace websockets { namespace network {
   template <class WifiClientImpl> 
   class GenericEspTcpClient : public TcpClient {
@@ -51,7 +54,9 @@ namespace websockets { namespace network {
       WSString line = "";
 
       int ch = -1;
+      uint64_t _timer = millis();
       while( ch != '\n' && available()) {
+        if ( millis() - _timer > readLineTimeout) return "";
         ch = client.read();
         if (ch < 0) continue;
         line += (char) ch;

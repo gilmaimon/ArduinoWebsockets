@@ -6,6 +6,9 @@
 #include <tiny_websockets/network/tcp_client.hpp>
 #include <tiny_websockets/network/tcp_server.hpp>
 
+// Timeout for connection attempts in milliseconds
+#define readLineTimeout 1000
+
 #include <NativeEthernet.h>
 
 namespace websockets { namespace network {
@@ -59,7 +62,9 @@ namespace websockets { namespace network {
       WSString line = "";
 
       int ch = -1;
+      uint64_t _timer = millis();
       while( ch != '\n' && available()) {
+        if ( millis() - _timer > readLineTimeout) return "";
         // It is important to call `client.available()`. Otherwise no data can be read.
         if (client.available()) {
           ch = client.read();
