@@ -35,29 +35,6 @@ const char *ntp1 = "time.windows.com";
 const char *ntp2 = "pool.ntp.org";
 time_t now;
 
-// The hardcoded certificate authority for this example.
-// Don't use it on your own apps!!!!!
-const char ca_cert[] PROGMEM = R"EOF(
------BEGIN CERTIFICATE-----
-MIIC1TCCAb2gAwIBAgIJAMPt1Ms37+hLMA0GCSqGSIb3DQEBCwUAMCExCzAJBgNV
-BAYTAlVTMRIwEAYDVQQDDAkxMjcuMC4wLjMwHhcNMTgwMzE0MDQyMTU0WhcNMjkw
-NTMxMDQyMTU0WjAhMQswCQYDVQQGEwJVUzESMBAGA1UEAwwJMTI3LjAuMC4zMIIB
-IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxsa4qU/tlzN4YTcnn/I/ffsi
-jOPc8QRcwClKzasIZNFEye4uThl+LGZWFIFb8X8Dc+xmmBaWlPJbqtphgFKStpar
-DdduHSW1ud6Y1FVKxljo3UwCMrYm76Q/jNzXJvGs6Z1MDNsVZzGJaoqit2H2Hkvk
-y+7kk3YbEDlcyVsLOw0zCKL4cd2DSNDyhIZxWo2a8Qn5IdjWAYtsTnW6MvLk/ya4
-abNeRfSZwi+r37rqi9CIs++NpL5ynqkKKEMrbeLactWgHbWrZeaMyLpuUEL2GF+w
-MRaAwaj7ERwT5gFJRqYwj6bbfIdx5PC7h7ucbyp272MbrDa6WNBCMwQO222t4wID
-AQABoxAwDjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQCmXfrC42nW
-IpL3JDkB8YlB2QUvD9JdMp98xxo33+xE69Gov0e6984F1Gluao0p6sS7KF+q3YLS
-4hjnzuGzF9GJMimIB7NMQ20yXKfKpmKJ7YugMaKTDWDhHn5679mKVbLSQxHCUMEe
-tEnMT93/UaDbWBjV6zu876q5vjPMYgDHODqO295ySaA71UkijaCn6UwKUT49286T
-V9ZtzgabNGHXfklHgUPWoShyze+G3g29I1BR0qABoJI63zaNu8ua42v5g1RldxsW
-X8yKI14mFOGxuvcygG8L2xxysW7Zq+9g+O7gW0Pm6RDYnUQmIwY83h1KFCtYCJdS
-2PgozwkkUNyP
------END CERTIFICATE-----
-)EOF";
-
 // The client's private key which must be kept secret
 const char client_private_key[] PROGMEM = R"EOF(
 -----BEGIN RSA PRIVATE KEY-----
@@ -113,6 +90,12 @@ seoK24dHmt6tWmn/sbxX7Aa6TL/4mVlFoOgcaTJyVaY/BrY=
 -----END CERTIFICATE-----
 )EOF";
 
+// To update SHA1 fingerprint, use Google Chrome to connect to https://www.websocket.org/echo.html 
+// Then "View Site Information" => "Certificate Viewer" => Copy SHA1 fingerprint
+// KH, This SHA1 fingerprint was updated 15.04.2021, 
+// Issued on Mar 15th 2021, expired on June 13th 2021
+const char echo_org_ssl_fingerprint[] PROGMEM   = "34 A2 66 08 A1 4D 1E 83 1A 0E 49 3C 4A 84 45 9E 4A 0D 08 FE";
+
 using namespace websockets;
 
 void onMessageCallback(WebsocketsMessage message) {
@@ -164,9 +147,8 @@ void setup() {
     // run callback when events are occuring
     client.onEvent(onEventsCallback);
 
-    // Before connecting, set the ssl certificates and key of the server
-    X509List cert(ca_cert);
-    client.setTrustAnchors(&cert);
+    // Before connecting, set the ssl fingerprint of the server
+    client.setFingerprint(echo_org_ssl_fingerprint);
 
     X509List *serverCertList = new X509List(client_cert);
     PrivateKey *serverPrivKey = new PrivateKey(client_private_key);
