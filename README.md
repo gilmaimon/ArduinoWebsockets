@@ -324,3 +324,5 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **25/04/20 (v0.4.17)** - Merged pull request by Luka Bodroža (@zastrixarundell) which fixed [issue #69](https://github.com/gilmaimon/ArduinoWebsockets/issues/69) - default headers (like Origin, Host) are now customizable via the `addHeader` method. Thank you [zastrixarundell](https://github.com/zastrixarundell) for the contribution.
 - **23/07/20 (v0.4.18)** - Merged pull request by Adelin U (@adelin-mcbsoft) which fixed [issue #84](https://github.com/gilmaimon/ArduinoWebsockets/issues/84) - SSL bug-fixing, implemented public-key certificate validation & EC Certificates for client-side. Thank you Adelin!
 - **28/11/20 (v0.5.0)** - Support for Teensy 4.1 added by the awesome [@arnoson](https://github.com/arnoson). Supporting plaintext client/server communication and providing new and useful examples. Thank you arnoson!
+- **10/05/21 (v0.5.1)** - Fingerprints and Certificates in the examples were updated by [@Khoi Hoang
+](https://github.com/khoih-prog). Thank you Khoi!
