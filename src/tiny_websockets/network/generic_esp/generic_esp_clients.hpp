@@ -52,7 +52,7 @@ namespace websockets { namespace network {
 
       int ch = -1;
 
-      uint64_t millisBeforeReadingHeaders = millis();
+      const uint64_t millisBeforeReadingHeaders = millis();
       while( ch != '\n' && available()) {
         if (millis() - millisBeforeReadingHeaders > _CONNECTION_TIMEOUT) return "";
         ch = client.read();

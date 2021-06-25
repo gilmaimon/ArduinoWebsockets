@@ -60,9 +60,8 @@ namespace websockets { namespace network {
 
       int ch = -1;
 
-      uint64_t millisBeforeReadingHeaders = millis();
+      const uint64_t millisBeforeReadingHeaders = millis();
       while( ch != '\n' && available()) {
-        if ( millis() - _timer > readLineTimeout) return "";
         // It is important to call `client.available()`. Otherwise no data can be read.
         if (millis() - millisBeforeReadingHeaders > _CONNECTION_TIMEOUT) return "";
         if (client.available()) {
