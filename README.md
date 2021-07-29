@@ -326,3 +326,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **28/11/20 (v0.5.0)** - Support for Teensy 4.1 added by the awesome [@arnoson](https://github.com/arnoson). Supporting plaintext client/server communication and providing new and useful examples. Thank you arnoson!
 - **10/05/21 (v0.5.1)** - Fingerprints and Certificates in the examples were updated by [@Khoi Hoang
 ](https://github.com/khoih-prog). Thank you Khoi!
+- **29/07/21 (v0.5.2)** - Merged PR by [ONLYstcm](https://github.com/ONLYstcm) which added a (configurable) timeout for connections. Thank you ONLYstcm.
