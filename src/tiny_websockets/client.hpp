@@ -28,11 +28,10 @@ namespace websockets {
     WebsocketsClient();
     WebsocketsClient(std::shared_ptr<network::TcpClient> client);
     
-    WebsocketsClient(const WebsocketsClient& other);
-    WebsocketsClient(const WebsocketsClient&& other);
-    
-    WebsocketsClient& operator=(const WebsocketsClient& other);
-    WebsocketsClient& operator=(const WebsocketsClient&& other);
+    WebsocketsClient(const WebsocketsClient& other) = delete;
+    WebsocketsClient(const WebsocketsClient&& other) = delete;
+    WebsocketsClient& operator=(const WebsocketsClient& other) = delete;
+    WebsocketsClient& operator=(const WebsocketsClient&& other) = delete;
 
     void addHeader(const WSInterfaceString key, const WSInterfaceString value);
 
