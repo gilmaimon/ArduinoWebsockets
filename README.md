@@ -2,7 +2,7 @@
 
 # Arduino Websockets
 
-A library for writing modern websockets applications with Arduino (ESP8266 and ESP32). This project is based on my project [TinyWebsockets](https://github.com/gilmaimon/TinyWebsockets).
+A library for writing modern websockets applications with Arduino (see [prerequisites](https://github.com/gilmaimon/ArduinoWebsockets#prerequisites) for supported platforms). This project is based on my project [TinyWebsockets](https://github.com/gilmaimon/TinyWebsockets).
 
 The library provides simple and easy interface for websockets work (Client and Server). See the [basic-usage](#Basic-Usage) guide and the [examples](#Full-Examples).
 
