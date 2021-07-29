@@ -51,7 +51,10 @@ namespace websockets { namespace network {
       WSString line = "";
 
       int ch = -1;
+
+      const uint64_t millisBeforeReadingHeaders = millis();
       while( ch != '\n' && available()) {
+        if (millis() - millisBeforeReadingHeaders > _CONNECTION_TIMEOUT) return "";
         ch = client.read();
         if (ch < 0) continue;
         line += (char) ch;
