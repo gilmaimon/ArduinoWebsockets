@@ -358,6 +358,12 @@ namespace websockets {
         return true;
     }
 
+    bool WebsocketsClient::connectSecure(WSInterfaceString host, int port, WSInterfaceString path) {
+        upgradeToSecuredConnection();
+        
+        return connect(host, port, path);
+    }
+
     void WebsocketsClient::onMessage(MessageCallback callback) {
         this->_messagesCallback = callback;
     }

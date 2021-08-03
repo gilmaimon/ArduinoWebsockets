@@ -36,11 +36,10 @@ namespace websockets {
 
     void addHeader(const WSInterfaceString key, const WSInterfaceString value);
 
-    void upgradeToSecuredConnection();
-
     bool connect(const WSInterfaceString url);
     bool connect(const WSInterfaceString host, const int port, const WSInterfaceString path);
-    
+    bool connectSecure(const WSInterfaceString host, const int port, const WSInterfaceString path);
+      
     void onMessage(const MessageCallback callback);
     void onMessage(const PartialMessageCallback callback);
 
@@ -123,5 +122,7 @@ namespace websockets {
     void _handlePing(WebsocketsMessage);
     void _handlePong(WebsocketsMessage);
     void _handleClose(WebsocketsMessage);
+
+    void upgradeToSecuredConnection();
   };
 }
