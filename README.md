@@ -327,3 +327,4 @@ Thanks for everyone who reported a bug, suggested a feature and contributed to t
 - **10/05/21 (v0.5.1)** - Fingerprints and Certificates in the examples were updated by [@Khoi Hoang
 ](https://github.com/khoih-prog). Thank you Khoi!
 - **29/07/21 (v0.5.2)** - Merged PR by [ONLYstcm](https://github.com/ONLYstcm) which added a (configurable) timeout for connections. Thank you ONLYstcm.
+- **06/08/21 (v0.5.3)** - Merged PR by [ln-12](https://github.com/ln-12) which added a `connectSecure` method to support WSS connection with the classic interface (host, port, path). Thank you!
