@@ -20,7 +20,10 @@ namespace websockets {
 
     struct ParsedHandshakeParams {
         WSString head;
-        std::map<WSString, WSString> headers;
+        // To store original headers
+        std::map<WSString, WSString> headers;       
+        // To store lowercased headers
+        std::map<WSString, WSString> lowheaders;
     };
 
     ParsedHandshakeParams recvHandshakeRequest(network::TcpClient& client) {
@@ -49,8 +52,20 @@ namespace websockets {
                 idx++;
             }
 
-            // store header
+            // store headers before tolower(), so we can search both
             result.headers[key] = value;
+           
+            // convert to lower case
+            std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+            
+            // Important, don't change these case-sensitive data : `Sec-WebSocket-Key` and `Origin`
+            if ( (key != WS_KEY_LOWER_CASE) && (key != HEADER_ORIGIN_LOWER_CASE) )
+            {    
+              std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+            }
+        
+            // store header after tolower()
+            result.lowheaders[key] = value;
 
             line = client.readLine();
         } while(client.available() && line != "\r\n");
@@ -64,22 +79,22 @@ namespace websockets {
         
         auto params = recvHandshakeRequest(*tcpClient);
         
-        if(params.headers["Connection"].find("Upgrade") == std::string::npos) return {};
-        if(params.headers["Upgrade"] != "websocket") return {}; 
-        if(params.headers["Sec-WebSocket-Version"] != "13") return {}; 
-        if(params.headers["Sec-WebSocket-Key"] == "") return {};
-        
-        auto serverAccept = crypto::websocketsHandshakeEncodeKey(
-            params.headers["Sec-WebSocket-Key"]
-        );
-
+        if ( (params.headers[HEADER_CONNECTION_NORMAL].find(HEADER_UPGRADE_NORMAL) == std::string::npos) && 
+             (params.lowheaders[HEADER_CONNECTION_LOWER_CASE].find(HEADER_UPGRADE_LOWER_CASE) == std::string::npos) ) return {};         
+        if ( (params.headers[HEADER_UPGRADE_NORMAL] != HEADER_WEBSOCKET_LOWER_CASE) && 
+             (params.lowheaders[HEADER_UPGRADE_LOWER_CASE] != HEADER_WEBSOCKET_LOWER_CASE) ) return {};         
+        if ( (params.headers[WS_VERSION_NORMAL] != "13") && (params.lowheaders[WS_VERSION_LOWER_CASE] != "13") ) return {};       
+        if ( (params.headers[WS_KEY_NORMAL] == "") && (params.lowheaders[WS_KEY_LOWER_CASE] == "") ) return {};
+      
+        auto serverAccept = crypto::websocketsHandshakeEncodeKey(params.lowheaders[WS_KEY_LOWER_CASE]);
+      
         tcpClient->send("HTTP/1.1 101 Switching Protocols\r\n");
-        tcpClient->send("Connection: Upgrade\r\n");
-        tcpClient->send("Upgrade: websocket\r\n");
-        tcpClient->send("Sec-WebSocket-Version: 13\r\n");
-        tcpClient->send("Sec-WebSocket-Accept: " + serverAccept + "\r\n");
-        tcpClient->send("\r\n");
-        
+        tcpClient->send(HEADER_CONNECTION_UPGRADE_NORMAL);
+        tcpClient->send(HEADER_UPGRADE_WS_NORMAL);
+        tcpClient->send(HEADER_WS_VERSION_13_NORMAL);
+        tcpClient->send(HEADER_WS_ACCEPT_NORMAL + serverAccept + HEADER_HOST_RN);
+        tcpClient->send(HEADER_HOST_RN);
+                
         WebsocketsClient wsClient(tcpClient);
         // Don't use masking from server to client (according to RFC)
         wsClient.setUseMasking(false);

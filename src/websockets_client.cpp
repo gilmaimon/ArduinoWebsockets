@@ -97,44 +97,45 @@ namespace websockets {
     HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri,
                                              const std::vector<std::pair<WSString, WSString>>& customHeaders) {
 
-        WSString key = crypto::base64Encode(crypto::randomBytes(16));
-
-        WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
-        handshake += "Host: " + host + "\r\n";
-        handshake += "Sec-WebSocket-Key: " + key + "\r\n";
-
-        for (const auto& header: customHeaders) {
-            handshake += header.first + ": " + header.second + "\r\n";
-        }
-
-        if (shouldAddDefaultHeader("Upgrade", customHeaders)) {
-            handshake += "Upgrade: websocket\r\n";
-        }
-
-        if (shouldAddDefaultHeader("Connection", customHeaders)) {
-            handshake += "Connection: Upgrade\r\n";
-        }
-
-        if (shouldAddDefaultHeader("Sec-WebSocket-Version", customHeaders)) {
-            handshake += "Sec-WebSocket-Version: 13\r\n";
-        }
-
-        if (shouldAddDefaultHeader("User-Agent", customHeaders)) {
-            handshake += "User-Agent: TinyWebsockets Client\r\n";
-        }
-
-        if (shouldAddDefaultHeader("Origin", customHeaders)) {
-            handshake += "Origin: https://github.com/gilmaimon/TinyWebsockets\r\n";
-        }
-
-        handshake += "\r\n";
-
-        HandshakeRequestResult result;
-        result.requestStr = handshake;
-#ifndef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
-        result.expectedAcceptKey = crypto::websocketsHandshakeEncodeKey(key);
-#endif
-        return std::move(result);
+      WSString key = crypto::base64Encode(crypto::randomBytes(16));
+    
+      WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
+      handshake += HEADER_HOST + host + HEADER_HOST_RN;
+      handshake += HEADER_WS_KEY + key + HEADER_HOST_RN;
+    
+      for (const auto& header : customHeaders) {
+        handshake += header.first + ": " + header.second + HEADER_HOST_RN;
+      }
+    
+      if (shouldAddDefaultHeader(HEADER_UPGRADE_NORMAL, customHeaders)) {
+        handshake += HEADER_UPGRADE_WS;
+      }
+    
+      if (shouldAddDefaultHeader(HEADER_CONNECTION_NORMAL, customHeaders)) {
+        handshake += HEADER_CONNECTION_UPGRADE;
+      }
+    
+      if (shouldAddDefaultHeader(HEADER_WS_VERSION_NORMAL, customHeaders)) {
+        handshake += HEADER_WS_VERSION_13;
+      }
+    
+      if (shouldAddDefaultHeader(HEADER_USER_AGENT_NORMAL, customHeaders)) {
+        handshake += HEADER_USER_AGENT_VALUE;
+      }
+    
+      if (shouldAddDefaultHeader(HEADER_ORIGIN_NORMAL, customHeaders)) {
+        handshake += HEADER_ORIGIN_VALUE;
+      }
+    
+      handshake += HEADER_HOST_RN;
+    
+      HandshakeRequestResult result;
+      result.requestStr = handshake;
+      
+  #ifndef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
+          result.expectedAcceptKey = crypto::websocketsHandshakeEncodeKey(key);
+  #endif
+          return std::move(result);
     }
 
     bool isWhitespace(char ch) {
