@@ -383,23 +383,19 @@ namespace internals {
 #endif
         // send the header
         std::string message_data = getHeader(len, opcode, fin, mask);
+
         if (mask) {
-            message_data += std::string(maskingKey, 4);
-        
-            size_t data_start = message_data.size();
-            message_data += std::string(data, len);
-
-            if (mask && memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
-                remaskData(message_data, maskingKey, data_start, len);
-            }
-
-            this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
-        } else {
-            // avoid to allocate memory while concatenating std:sting, we do not alter the data so less send it in two parts. 
-            this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
-            this->_client->send(reinterpret_cast<const uint8_t*>(data), len);
+          message_data += std::string(maskingKey, 4);
         }
 
+        size_t data_start = message_data.size();
+        message_data += std::string(data, len);
+
+        if (mask && memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
+          remaskData(message_data, maskingKey, data_start, len);
+        }
+
+        this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
         return true; // TODO dont assume success
     }
 
