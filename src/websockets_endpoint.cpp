@@ -182,7 +182,7 @@ namespace internals {
 
             done_reading += numReceived;
         }
-        return std::move(data);
+        return data;
     }
 
     void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
@@ -233,14 +233,14 @@ namespace internals {
         frame.opcode = header.opcode;
         frame.payload_length = payloadLength;
 
-        return std::move(frame);
+        return frame;
     }
 
     WebsocketsMessage WebsocketsEndpoint::handleFrameInStreamingMode(WebsocketsFrame& frame) {
         if(frame.isControlFrame()) {
             auto msg = WebsocketsMessage::CreateFromFrame(std::move(frame));
             this->handleMessageInternally(msg);
-            return std::move(msg);
+            return msg;
         }
         else if(frame.isBeginningOfFragmentsStream()) {
             this->_recvMode = RecvMode_Streaming;
@@ -293,7 +293,7 @@ namespace internals {
         if(frame.isNormalUnfragmentedMessage() || frame.isControlFrame()) {
             auto msg = WebsocketsMessage::CreateFromFrame(std::move(frame));
             this->handleMessageInternally(msg);
-            return std::move(msg);
+            return msg;
         } 
         else if(frame.isBeginningOfFragmentsStream()) {
             return handleFrameInStreamingMode(frame);
@@ -383,19 +383,23 @@ namespace internals {
 #endif
         // send the header
         std::string message_data = getHeader(len, opcode, fin, mask);
-
         if (mask) {
-          message_data += std::string(maskingKey, 4);
+            message_data += std::string(maskingKey, 4);
+        
+            size_t data_start = message_data.size();
+            message_data += std::string(data, len);
+
+            if (mask && memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
+                remaskData(message_data, maskingKey, data_start, len);
+            }
+
+            this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
+        } else {
+            // avoid to allocate memory while concatenating std:sting, we do not alter the data so less send it in two parts. 
+            this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
+            this->_client->send(reinterpret_cast<const uint8_t*>(data), len);
         }
 
-        size_t data_start = message_data.size();
-        message_data += std::string(data, len);
-
-        if (mask && memcmp(maskingKey, __TINY_WS_INTERNAL_DEFAULT_MASK, 4) != 0) {
-          remaskData(message_data, maskingKey, data_start, len);
-        }
-
-        this->_client->send(reinterpret_cast<const uint8_t*>(message_data.c_str()), message_data.size());
         return true; // TODO dont assume success
     }
 

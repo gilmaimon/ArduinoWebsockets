@@ -134,7 +134,7 @@ namespace websockets {
 #ifndef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
         result.expectedAcceptKey = crypto::websocketsHandshakeEncodeKey(key);
 #endif
-        return std::move(result);
+        return result;
     }
 
     bool isWhitespace(char ch) {
