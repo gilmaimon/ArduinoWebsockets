@@ -8,6 +8,7 @@
 #include <tiny_websockets/network/generic_esp/generic_esp_clients.hpp>
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
 namespace websockets { namespace network {

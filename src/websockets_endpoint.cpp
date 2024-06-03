@@ -182,7 +182,7 @@ namespace internals {
 
             done_reading += numReceived;
         }
-        return std::move(data);
+        return data;
     }
 
     void remaskData(WSString& data, const uint8_t* const maskingKey, uint64_t payloadLength) {
@@ -233,14 +233,14 @@ namespace internals {
         frame.opcode = header.opcode;
         frame.payload_length = payloadLength;
 
-        return std::move(frame);
+        return frame;
     }
 
     WebsocketsMessage WebsocketsEndpoint::handleFrameInStreamingMode(WebsocketsFrame& frame) {
         if(frame.isControlFrame()) {
             auto msg = WebsocketsMessage::CreateFromFrame(std::move(frame));
             this->handleMessageInternally(msg);
-            return std::move(msg);
+            return msg;
         }
         else if(frame.isBeginningOfFragmentsStream()) {
             this->_recvMode = RecvMode_Streaming;
@@ -293,7 +293,7 @@ namespace internals {
         if(frame.isNormalUnfragmentedMessage() || frame.isControlFrame()) {
             auto msg = WebsocketsMessage::CreateFromFrame(std::move(frame));
             this->handleMessageInternally(msg);
-            return std::move(msg);
+            return msg;
         } 
         else if(frame.isBeginningOfFragmentsStream()) {
             return handleFrameInStreamingMode(frame);
