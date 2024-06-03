@@ -16,6 +16,10 @@ namespace websockets { namespace network {
   
   class SecuredEsp32TcpClient : public GenericEspTcpClient<WiFiClientSecure> {
   public:
+    void setInsecure() {
+      this->client.setInsecure();
+    }
+    
     void setCACert(const char* ca_cert) {
       this->client.setCACert(ca_cert);
     }
