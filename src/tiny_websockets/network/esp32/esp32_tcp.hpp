@@ -47,7 +47,7 @@ namespace websockets { namespace network {
     
     TcpClient* accept() override {
       while(available()) {
-        auto client = server.available();
+        auto client = server.accept();
         if(client) {
           return new Esp32TcpClient{client};
         }
