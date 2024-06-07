@@ -47,7 +47,11 @@ namespace websockets { namespace network {
     
     TcpClient* accept() override {
       while(available()) {
+#if (ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0))
+        auto client = server.accept();
+#else
         auto client = server.available();
+#endif
         if(client) {
           return new Esp32TcpClient{client};
         }
