@@ -8,7 +8,7 @@ namespace websockets { namespace network {
   class GenericEspTcpClient : public TcpClient {
   public:
     GenericEspTcpClient(WifiClientImpl c) : client(c) {
-      client.setNoDelay(true);
+      //client.setNoDelay(true);
     }
     
     GenericEspTcpClient() {}
@@ -16,7 +16,7 @@ namespace websockets { namespace network {
     bool connect(const WSString& host, const int port) {
       yield();
       auto didConnect = client.connect(host.c_str(), port);
-      client.setNoDelay(true);
+      //client.setNoDelay(true);
       return didConnect;
     }
 
