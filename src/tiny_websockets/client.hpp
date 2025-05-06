@@ -35,6 +35,7 @@ namespace websockets {
     WebsocketsClient& operator=(const WebsocketsClient&& other);
 
     void addHeader(const WSInterfaceString key, const WSInterfaceString value);
+    bool setHeader(const WSInterfaceString key, const WSInterfaceString value, bool AddIfNotExist);
 
     bool connect(const WSInterfaceString url);
     bool connect(const WSInterfaceString host, const int port, const WSInterfaceString path);
