@@ -230,6 +230,8 @@ namespace websockets {
         }
         if(this->_optional_ssl_private_key) {
             client->setPrivateKey(this->_optional_ssl_private_key);
+        } else {
+            client->setInsecure();
         }
     #endif
 
